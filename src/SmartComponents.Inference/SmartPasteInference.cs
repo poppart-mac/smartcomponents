@@ -1,19 +1,17 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using System;
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using SmartComponents.StaticAssets.Inference;
 
 namespace SmartComponents.Inference;
 
 public class SmartPasteInference
 {
-    private static readonly JsonSerializerOptions jsonSerializerOptions
-        = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+    private static readonly JsonSerializerOptions _jsonSerializerOptions
+        = new(JsonSerializerDefaults.Web);
 
     public class SmartPasteRequestData
     {
@@ -37,7 +35,7 @@ public class SmartPasteInference
 
     public Task<SmartPasteResponseData> GetFormCompletionsAsync(IInferenceBackend inferenceBackend, string dataJson)
     {
-        var data = JsonSerializer.Deserialize<SmartPasteRequestData>(dataJson, jsonSerializerOptions)!;
+        var data = JsonSerializer.Deserialize<SmartPasteRequestData>(dataJson, _jsonSerializerOptions)!;
         if (data.FormFields is null || data.FormFields.Length == 0 || string.IsNullOrEmpty(data.ClipboardContents))
         {
             return Task.FromResult(new SmartPasteResponseData { BadRequest = true });
@@ -101,11 +99,11 @@ USER_DATA: {data.ClipboardContents}
                 sb.AppendLine(",");
             }
 
-            sb.Append($"  \"{field.Identifier}\": /* ");
+            sb.Append(CultureInfo.InvariantCulture, $"  \"{field.Identifier}\": /* ");
 
             if (!string.IsNullOrEmpty(field.Description))
             {
-                sb.Append($"The {field.Description}");
+                sb.Append(CultureInfo.InvariantCulture, $"The {field.Description}");
             }
 
             if (field.AllowedValues is { Length: > 0 })
@@ -120,15 +118,15 @@ USER_DATA: {data.ClipboardContents}
                     }
                     else
                     {
-                        sb.Append(",");
+                        sb.Append(',');
                     }
-                    sb.Append($"\"{value}\"");
+                    sb.Append(CultureInfo.InvariantCulture, $"\"{value}\"");
                 }
-                sb.Append(")");
+                sb.Append(')');
             }
             else
             {
-                sb.Append($" of type {field.Type}");
+                sb.Append(CultureInfo.InvariantCulture, $" of type {field.Type}");
             }
 
             sb.Append(" */");

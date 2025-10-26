@@ -1,27 +1,27 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
-        <!--
-            Can't support netstandard2.0 because FastBertTokenizer currently requires net6.0 or newer.
-            See https://github.com/georg-jung/FastBertTokenizer/issues/23
-        -->
-        <TargetFrameworks>net6.0;net8.0</TargetFrameworks>
-        <LangVersion>latest</LangVersion>
-        <IsPackable>true</IsPackable>
-        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <Nullable>enable</Nullable>
+      <TargetFrameworks>net9.0-android;net9.0-ios;net9.0-maccatalyst</TargetFrameworks>
+      <TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net9.0-windows10.0.19041.0</TargetFrameworks>
+      <!-- Uncomment to also build the tizen app. You will need to install tizen by following this: https://github.com/Samsung/Tizen.NET -->
+      <!-- <TargetFrameworks>$(TargetFrameworks);net9.0-tizen</TargetFrameworks> -->
+      <UseMaui>true</UseMaui>
+      <LangVersion>latest</LangVersion>
+      <IsPackable>true</IsPackable>
+      <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+      <Nullable>enable</Nullable>
 
-        <!-- Suppress "Opt in to preview features before using them" because of false positives -->
-        <!-- See note in https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca2252#when-to-suppress-warnings -->
-        <NoWarn>CA2252;SKEXP0001;SKEXP0070;$(NoWarn)</NoWarn>
+      <!-- Suppress "Opt in to preview features before using them" because of false positives -->
+      <!-- See note in https://learn.microsoft.com/en-us/dotnet/fundamentals/code-analysis/quality-rules/ca2252#when-to-suppress-warnings -->
+      <NoWarn>CA2252;SKEXP0001;SKEXP0070;$(NoWarn)</NoWarn>
     </PropertyGroup>
-
+    <Import Project="build\SmartComponents.LocalEmbeddings.targets" Condition="Exists('build\SmartComponents.LocalEmbeddings.targets')" />
     <ItemGroup>
-        <PackageReference Include="Microsoft.Bcl.Numerics" />
-        <PackageReference Include="Microsoft.Extensions.ObjectPool" />
-        <PackageReference Include="System.Numerics.Tensors" />
-        <PackageReference Include="System.Runtime.Caching" />
-        <PackageReference Include="Microsoft.SemanticKernel.Connectors.Onnx" />
+      <PackageReference Include="Microsoft.Bcl.Numerics" />
+      <PackageReference Include="Microsoft.Extensions.ObjectPool" />
+      <PackageReference Include="System.Numerics.Tensors" />
+      <PackageReference Include="System.Runtime.Caching" />
+      <PackageReference Include="Microsoft.SemanticKernel.Connectors.Onnx" />
     </ItemGroup>
 
     <ItemGroup>
@@ -33,5 +33,4 @@
             <_PackageFiles Include="build\**" BuildAction="Content" PackagePath="build" />
         </ItemGroup>
     </Target>
-
 </Project>

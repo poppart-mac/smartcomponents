@@ -1,10 +1,8 @@
-﻿// Licensed to the .NET Foundation under one or more agreements.
+// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using System;
-using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
-using System.Threading.Tasks;
 using SmartComponents.Infrastructure;
 using SmartComponents.StaticAssets.Inference;
 
@@ -30,7 +28,7 @@ RULES:
             systemMessageBuilder.Append("\nAlways try to use variations on the following phrases as part of the predictions:\n");
             foreach (var phrase in stockPhrases)
             {
-                systemMessageBuilder.AppendFormat("- {0}\n", phrase);
+                systemMessageBuilder.AppendFormat(CultureInfo.InvariantCulture, "- {0}\n", phrase);
             }
         }
 
@@ -91,17 +89,17 @@ USER_TEXT: {textBefore}^^^{textAfter}"),
             var trimAfter = response.IndexOfAny(['.', '?', '!']);
             if (trimAfter > 0 && response.Length > trimAfter + 1 && response[trimAfter + 1] == ' ')
             {
-                response = response.Substring(0, trimAfter + 1);
+                response = response[..(trimAfter + 1)];
             }
 
             // Leave it up to the frontend code to decide whether to add a training space
-            var trimmedResponse = response.Substring(4).TrimEnd(']', ' ');
+            var trimmedResponse = response[4..].TrimEnd(']', ' ');
 
             // Don't have a leading space on the suggestion if there's already a space right
             // before the cursor. The language model normally gets this right anyway (distinguishing
             // between starting a new word, vs continuing a partly-typed one) but sometimes it adds
             // an unnecessary extra space.
-            if (textBefore.Length > 0 && textBefore[textBefore.Length - 1] == ' ')
+            if (textBefore.Length > 0 && textBefore[^1] == ' ')
             {
                 trimmedResponse = trimmedResponse.TrimStart(' ');
             }

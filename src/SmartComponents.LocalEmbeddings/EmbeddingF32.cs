@@ -16,11 +16,16 @@ namespace SmartComponents.LocalEmbeddings;
 /// This is the raw, unquantized output from the embedding model. For the default 384-dimensional
 /// embedding model, each embedded value takes 1536 bytes.
 /// </summary>
+/// <remarks>
+/// Constructs an instance of <see cref="EmbeddingF32"/> using existing data. This can be
+/// data previously supplied by <see cref="Buffer"/>.
+/// </remarks>
+/// <param name="buffer">A buffer holding existing <see cref="EmbeddingF32"/> data.</param>
 [JsonConverter(typeof(FloatEmbeddingJsonConverter))]
-public readonly struct EmbeddingF32 : IEmbedding<EmbeddingF32>
+public readonly struct EmbeddingF32(ReadOnlyMemory<byte> buffer) : IEmbedding<EmbeddingF32>
 {
-    private readonly ReadOnlyMemory<byte> _buffer;
-    private readonly ReadOnlyMemory<float> _values;
+    private readonly ReadOnlyMemory<byte> _buffer = buffer;
+    private readonly ReadOnlyMemory<float> _values = Utils.Cast<byte, float>(MemoryMarshal.AsMemory(buffer));
 
     /// <summary>
     /// Gets the buffer holding the embedded value's data.
@@ -31,17 +36,6 @@ public readonly struct EmbeddingF32 : IEmbedding<EmbeddingF32>
     /// Gets the numerical components of the embedding vector.
     /// </summary>
     public ReadOnlyMemory<float> Values => _values;
-
-    /// <summary>
-    /// Constructs an instance of <see cref="EmbeddingF32"/> using existing data. This can be
-    /// data previously supplied by <see cref="Buffer"/>.
-    /// </summary>
-    /// <param name="buffer">A buffer holding existing <see cref="EmbeddingF32"/> data.</param>
-    public EmbeddingF32(ReadOnlyMemory<byte> buffer)
-    {
-        _buffer = buffer;
-        _values = Utils.Cast<byte, float>(MemoryMarshal.AsMemory(buffer));
-    }
 
     /// <inheritdoc />
     public static EmbeddingF32 FromModelOutput(ReadOnlySpan<float> input, Memory<byte> buffer)
@@ -94,18 +88,18 @@ public readonly struct EmbeddingF32 : IEmbedding<EmbeddingF32>
             return new CastMemoryManager<TFrom, TTo>(from).Memory;
         }
 
-        private sealed class CastMemoryManager<TFrom, TTo> : MemoryManager<TTo>
+        private sealed class CastMemoryManager<TFrom, TTo>(Memory<TFrom> from) : MemoryManager<TTo>
             where TFrom : unmanaged
             where TTo : unmanaged
         {
-            private readonly Memory<TFrom> _from;
-
-            public CastMemoryManager(Memory<TFrom> from) => _from = from;
+            private readonly Memory<TFrom> _from = from;
 
             public override Span<TTo> GetSpan()
                 => MemoryMarshal.Cast<TFrom, TTo>(_from.Span);
 
-            protected override void Dispose(bool disposing) { }
+            protected override void Dispose(bool disposing)
+            {
+            }
             public override MemoryHandle Pin(int elementIndex = 0)
                 => throw new NotSupportedException();
             public override void Unpin()

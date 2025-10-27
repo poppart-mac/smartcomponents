@@ -21,25 +21,20 @@ namespace SmartComponents.LocalEmbeddings;
 /// This representation is equivalent to the LSH (Locality Sensitive Hashing) index option in Faiss.
 /// It is very fast and compact, at the cost of some precision.
 /// </summary>
+/// <remarks>
+/// Constructs an instance of <see cref="EmbeddingI1"/> using existing data. This can be
+/// data previously supplied by <see cref="Buffer"/>.
+/// </remarks>
+/// <param name="buffer">A buffer holding existing <see cref="EmbeddingI1"/> data.</param>
 [JsonConverter(typeof(BitEmbeddingJsonConverter))]
-public readonly struct EmbeddingI1 : IEmbedding<EmbeddingI1>
+public readonly struct EmbeddingI1(ReadOnlyMemory<byte> buffer) : IEmbedding<EmbeddingI1>
 {
-    private readonly ReadOnlyMemory<byte> _buffer;
+    private readonly ReadOnlyMemory<byte> _buffer = buffer;
 
     /// <summary>
     /// Gets the buffer holding the embedded value's data.
     /// </summary>
     public ReadOnlyMemory<byte> Buffer => _buffer;
-
-    /// <summary>
-    /// Constructs an instance of <see cref="EmbeddingI1"/> using existing data. This can be
-    /// data previously supplied by <see cref="Buffer"/>.
-    /// </summary>
-    /// <param name="buffer">A buffer holding existing <see cref="EmbeddingI1"/> data.</param>
-    public EmbeddingI1(ReadOnlyMemory<byte> buffer)
-    {
-        _buffer = buffer;
-    }
 
     /// <inheritdoc />
     public static EmbeddingI1 FromModelOutput(ReadOnlySpan<float> input, Memory<byte> buffer)
@@ -72,14 +67,38 @@ public readonly struct EmbeddingI1 : IEmbedding<EmbeddingI1>
             var sum = (byte)0;
 
 #if NET8_0_OR_GREATER
-            if (float.IsPositive(sources[0])) { sum |= 128; }
-            if (float.IsPositive(sources[1])) { sum |= 64; }
-            if (float.IsPositive(sources[2])) { sum |= 32; }
-            if (float.IsPositive(sources[3])) { sum |= 16; }
-            if (float.IsPositive(sources[4])) { sum |= 8; }
-            if (float.IsPositive(sources[5])) { sum |= 4; }
-            if (float.IsPositive(sources[6])) { sum |= 2; }
-            if (float.IsPositive(sources[7])) { sum |= 1; }
+            if (float.IsPositive(sources[0]))
+            {
+                sum |= 128;
+            }
+            if (float.IsPositive(sources[1]))
+            {
+                sum |= 64;
+            }
+            if (float.IsPositive(sources[2]))
+            {
+                sum |= 32;
+            }
+            if (float.IsPositive(sources[3]))
+            {
+                sum |= 16;
+            }
+            if (float.IsPositive(sources[4]))
+            {
+                sum |= 8;
+            }
+            if (float.IsPositive(sources[5]))
+            {
+                sum |= 4;
+            }
+            if (float.IsPositive(sources[6]))
+            {
+                sum |= 2;
+            }
+            if (float.IsPositive(sources[7]))
+            {
+                sum |= 1;
+            }
 #else
             if (sources[0] >= 0) { sum |= 128; }
             if (sources[1] >= 0) { sum |= 64; }

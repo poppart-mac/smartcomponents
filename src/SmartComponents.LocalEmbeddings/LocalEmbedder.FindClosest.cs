@@ -91,7 +91,7 @@ public partial class LocalEmbedder
             throw new ArgumentException($"{maxResults} must be greater than 0.");
         }
 
-        var sortedTopK = new SortedSet<SimilarityScore<TItem>>(SimilarityScore<TItem>.Comparer);
+        var sortedTopK = new SortedSet<SimilarityScore<TItem>>(SimilarityScore<TItem>._comparer);
         var candidatesEnumerator = candidates.GetEnumerator();
         var index = 0L;
         minSimilarity ??= float.MinValue;

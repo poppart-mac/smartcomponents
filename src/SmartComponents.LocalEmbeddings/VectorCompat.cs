@@ -1,12 +1,8 @@
 // Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using System;
-using System.Numerics;
 using System.Runtime.CompilerServices;
 using System.Runtime.Intrinsics;
-using System.Runtime.Intrinsics.Arm;
-using System.Runtime.Intrinsics.X86;
 
 namespace SmartComponents.LocalEmbeddings;
 
@@ -113,7 +109,7 @@ internal static class VectorCompat
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static unsafe Vector256<T> Vector256Multiply<T>(Vector256<T> lhs, Vector256<T> rhs) where T: unmanaged
+    public static unsafe Vector256<T> Vector256Multiply<T>(Vector256<T> lhs, Vector256<T> rhs) where T : unmanaged
     {
 #if NET8_0_OR_GREATER
         return lhs * rhs;
@@ -136,7 +132,7 @@ internal static class VectorCompat
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static unsafe T Vector256Sum<T>(Vector256<T> vector) where T: unmanaged
+    public static unsafe T Vector256Sum<T>(Vector256<T> vector) where T : unmanaged
     {
 #if NET8_0_OR_GREATER
         return Vector256.Sum(vector);
@@ -192,10 +188,10 @@ internal static class VectorCompat
             throw new PlatformNotSupportedException("This operation requires .NET 8, or a CPU that supports AVX (x86) or AdvSIMD (ARM).");
         }
 #endif
-        }
+    }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static unsafe void Vector64Store<T>(Vector64<T> vector, T* destination) where T: unmanaged
+    public static unsafe void Vector64Store<T>(Vector64<T> vector, T* destination) where T : unmanaged
     {
 #if NET8_0_OR_GREATER
         Vector64.Store(vector, destination);

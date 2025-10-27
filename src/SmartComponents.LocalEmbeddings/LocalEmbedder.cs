@@ -13,9 +13,12 @@ using Microsoft.SemanticKernel.Embeddings;
 
 namespace SmartComponents.LocalEmbeddings;
 
-public sealed partial class LocalEmbedder : IDisposable, ITextEmbeddingGenerationService
+public sealed partial class LocalEmbedder(string modelName, BertOnnxOptions options) : IDisposable, ITextEmbeddingGenerationService
 {
-    private readonly BertOnnxTextEmbeddingGenerationService _embeddingGenerator;
+    private readonly BertOnnxTextEmbeddingGenerationService _embeddingGenerator = BertOnnxTextEmbeddingGenerationService.Create(
+            GetFullPathToModelFile(modelName, "model.onnx"),
+            vocabPath: GetFullPathToModelFile(modelName, "vocab.txt"),
+            options);
 
     public IReadOnlyDictionary<string, object?> Attributes => _embeddingGenerator.Attributes;
 
@@ -27,14 +30,6 @@ public sealed partial class LocalEmbedder : IDisposable, ITextEmbeddingGeneratio
     public LocalEmbedder(BertOnnxOptions options)
         : this("default", options)
     {
-    }
-
-    public LocalEmbedder(string modelName, BertOnnxOptions options)
-    {
-        _embeddingGenerator = BertOnnxTextEmbeddingGenerationService.Create(
-            GetFullPathToModelFile(modelName, "model.onnx"),
-            vocabPath: GetFullPathToModelFile(modelName, "vocab.txt"),
-            options);
     }
 
     private static string GetFullPathToModelFile(string modelName, string fileName)

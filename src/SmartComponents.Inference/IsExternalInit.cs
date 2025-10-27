@@ -6,4 +6,6 @@ using System.ComponentModel;
 namespace SmartComponents.Inference;
 
 [EditorBrowsable(EditorBrowsableState.Never)]
-internal sealed class IsExternalInit { }
+internal sealed class IsExternalInit
+{
+}

@@ -3,8 +3,6 @@
 
 using System.Globalization;
 using System.Text;
-using SmartComponents.Infrastructure;
-using SmartComponents.StaticAssets.Inference;
 
 namespace SmartComponents.Inference;
 

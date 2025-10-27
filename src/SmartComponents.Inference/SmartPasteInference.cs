@@ -4,7 +4,6 @@
 using System.Globalization;
 using System.Text;
 using System.Text.Json;
-using SmartComponents.StaticAssets.Inference;
 
 namespace SmartComponents.Inference;
 
@@ -15,22 +14,46 @@ public class SmartPasteInference
 
     public class SmartPasteRequestData
     {
-        public FormField[]? FormFields { get; set; }
-        public string? ClipboardContents { get; set; }
+        public FormField[]? FormFields
+        {
+            get; set;
+        }
+        public string? ClipboardContents
+        {
+            get; set;
+        }
     }
 
     public class FormField
     {
-        public string? Identifier { get; set; }
-        public string? Description { get; set; }
-        public string?[]? AllowedValues { get; set; }
-        public string? Type { get; set; }
+        public string? Identifier
+        {
+            get; set;
+        }
+        public string? Description
+        {
+            get; set;
+        }
+        public string?[]? AllowedValues
+        {
+            get; set;
+        }
+        public string? Type
+        {
+            get; set;
+        }
     }
 
     public readonly struct SmartPasteResponseData
     {
-        public bool BadRequest { get; init; }
-        public string? Response { get; init; }
+        public bool BadRequest
+        {
+            get; init;
+        }
+        public string? Response
+        {
+            get; init;
+        }
     }
 
     public Task<SmartPasteResponseData> GetFormCompletionsAsync(IInferenceBackend inferenceBackend, string dataJson)

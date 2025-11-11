@@ -5,16 +5,16 @@ namespace SmartComponents.E2ETest.BlazorNet6;
 
 public class SmartPasteTest : PlaywrightTestBase<TestBlazorServerNet6App.Program>
 {
-    public SmartPasteTest(KestrelWebApplicationFactory<TestBlazorServerNet6App.Program> server) : base(server)
-    {
-    }
+    public SmartPasteTest(KestrelWebApplicationFactory<TestBlazorServerNet6App.Program> server)
+        : base(server) { }
 
     protected override async Task OnBrowserReadyAsync()
     {
         await Page.GotoAsync(Server.Address + "/smartpaste");
         await Page.Context.GrantPermissionsAsync(["clipboard-read", "clipboard-write"]);
 
-        await Expect(Page.Locator("#is-interactive")).ToHaveTextAsync("True", new() { Timeout = 30000 });
+        await Expect(Page.Locator("#is-interactive"))
+            .ToHaveTextAsync("True", new() { Timeout = 30000 });
     }
 
     [Fact]
@@ -37,6 +37,7 @@ public class SmartPasteTest : PlaywrightTestBase<TestBlazorServerNet6App.Program
         await Expect(form.Locator("[name=lastname]")).ToHaveValueAsync("Mandal");
     }
 
-    protected Task SetClipboardContentsAsync(string text)
-        => Page.Locator("html").EvaluateAsync("(ignored, value) => navigator.clipboard.writeText(value)", text);
+    protected Task SetClipboardContentsAsync(string text) =>
+        Page.Locator("html")
+            .EvaluateAsync("(ignored, value) => navigator.clipboard.writeText(value)", text);
 }

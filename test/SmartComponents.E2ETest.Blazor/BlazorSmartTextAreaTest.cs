@@ -9,9 +9,8 @@ namespace SmartComponents.E2ETest.Blazor;
 
 public class BlazorSmartTextAreaInlineTest : SmartTextAreaInlineTest<Program>
 {
-    public BlazorSmartTextAreaInlineTest(KestrelWebApplicationFactory<Program> server) : base(server)
-    {
-    }
+    public BlazorSmartTextAreaInlineTest(KestrelWebApplicationFactory<Program> server)
+        : base(server) { }
 
     [Theory]
     [InlineData("server")]
@@ -19,10 +18,16 @@ public class BlazorSmartTextAreaInlineTest : SmartTextAreaInlineTest<Program>
     public async Task WorksWithInteractiveBinding(string hostPlatform)
     {
         await Page.GotoAsync(Server.Address + $"/smarttextarea/{hostPlatform}");
-        await Expect(Page.Locator("#is-interactive")).ToHaveTextAsync("True", new() { Timeout = 30000 });
+        await Expect(Page.Locator("#is-interactive"))
+            .ToHaveTextAsync("True", new() { Timeout = 30000 });
 
         // Show a suggestion
-        await textArea.ClickAsync(new() { Position = new() { X = 200, Y = 5 } });
+        await textArea.ClickAsync(
+            new()
+            {
+                Position = new() { X = 200, Y = 5 },
+            }
+        );
         await textArea.PressSequentiallyAsync(" - that's pos");
         await AssertIsShowingSuggestionAsync(30, "itively sweltering! ");
 
@@ -32,17 +37,18 @@ public class BlazorSmartTextAreaInlineTest : SmartTextAreaInlineTest<Program>
 
         // See the binding is updated only after the change event, and it doesn't include the suggestion we didn't yet accept
         await Task.Delay(500); // ... even if we wait a bit, it's still not updated
-        await Expect(Page.Locator("#bound-text")).ToHaveTextAsync("It's 35 degrees C\n\nNext, sport.");
+        await Expect(Page.Locator("#bound-text"))
+            .ToHaveTextAsync("It's 35 degrees C\n\nNext, sport.");
         await textArea.BlurAsync();
-        await Expect(Page.Locator("#bound-text")).ToHaveTextAsync("It's 35 degrees C - that's positively sweltering! \n\nNext, sport.");
+        await Expect(Page.Locator("#bound-text"))
+            .ToHaveTextAsync("It's 35 degrees C - that's positively sweltering! \n\nNext, sport.");
     }
 }
 
 public class BlazorSmartTextAreaOverlayTest : SmartTextAreaOverlayTest<Program>
 {
-    public BlazorSmartTextAreaOverlayTest(KestrelWebApplicationFactory<Program> server) : base(server)
-    {
-    }
+    public BlazorSmartTextAreaOverlayTest(KestrelWebApplicationFactory<Program> server)
+        : base(server) { }
 
     [Theory]
     [InlineData("server")]
@@ -50,10 +56,16 @@ public class BlazorSmartTextAreaOverlayTest : SmartTextAreaOverlayTest<Program>
     public async Task WorksWithInteractiveBinding(string hostPlatform)
     {
         await Page.GotoAsync(Server.Address + $"/smarttextarea/{hostPlatform}");
-        await Expect(Page.Locator("#is-interactive")).ToHaveTextAsync("True", new() { Timeout = 30000 });
+        await Expect(Page.Locator("#is-interactive"))
+            .ToHaveTextAsync("True", new() { Timeout = 30000 });
 
         // Show a suggestion
-        await textArea.ClickAsync(new() { Position = new() { X = 200, Y = 5 } });
+        await textArea.ClickAsync(
+            new()
+            {
+                Position = new() { X = 200, Y = 5 },
+            }
+        );
         await textArea.PressSequentiallyAsync(" - that's pos");
         await AssertIsShowingSuggestionAsync(30, "pos", "itively sweltering! ");
 
@@ -63,8 +75,10 @@ public class BlazorSmartTextAreaOverlayTest : SmartTextAreaOverlayTest<Program>
 
         // See the binding is updated only after the change event, and it doesn't include the suggestion we didn't yet accept
         await Task.Delay(500); // ... even if we wait a bit, it's still not updated
-        await Expect(Page.Locator("#bound-text")).ToHaveTextAsync("It's 35 degrees C\n\nNext, sport.");
+        await Expect(Page.Locator("#bound-text"))
+            .ToHaveTextAsync("It's 35 degrees C\n\nNext, sport.");
         await textArea.BlurAsync();
-        await Expect(Page.Locator("#bound-text")).ToHaveTextAsync("It's 35 degrees C - that's positively sweltering! \n\nNext, sport.");
+        await Expect(Page.Locator("#bound-text"))
+            .ToHaveTextAsync("It's 35 degrees C - that's positively sweltering! \n\nNext, sport.");
     }
 }

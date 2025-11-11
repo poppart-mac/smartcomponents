@@ -9,15 +9,15 @@ namespace SmartComponents.E2ETest.Blazor;
 
 public class BlazorSmartPasteTest : SmartPasteTest<Program>
 {
-    public BlazorSmartPasteTest(KestrelWebApplicationFactory<Program> server) : base(server)
-    {
-    }
+    public BlazorSmartPasteTest(KestrelWebApplicationFactory<Program> server)
+        : base(server) { }
 
     [Fact]
     public async Task WorksOnInteractiveWebAssembly()
     {
         await Page.GotoAsync(Server.Address + "/smartpaste/webassembly");
-        await Expect(Page.Locator("#is-interactive")).ToHaveTextAsync("True", new() { Timeout = 30000 });
+        await Expect(Page.Locator("#is-interactive"))
+            .ToHaveTextAsync("True", new() { Timeout = 30000 });
 
         var form = Page.Locator("#simple-case");
         await Expect(form.Locator("[name=firstname]")).ToBeEmptyAsync();

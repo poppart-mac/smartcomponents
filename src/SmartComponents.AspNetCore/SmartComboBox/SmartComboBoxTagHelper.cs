@@ -30,7 +30,9 @@ public class SmartComboBoxTagHelper : TagHelper
         // it gives the developer feedback if they forget to supply the attribute
         if (string.IsNullOrEmpty(Url))
         {
-            throw new InvalidOperationException($"The smart-combobox tag helper requires a value for the '{nameof(Url)}' attribute.");
+            throw new InvalidOperationException(
+                $"The smart-combobox tag helper requires a value for the '{nameof(Url)}' attribute."
+            );
         }
 
         output.TagName = "input";
@@ -42,8 +44,16 @@ public class SmartComboBoxTagHelper : TagHelper
         PassThroughAttributeIfPresent(context, output, "title", "title");
         PassThroughAttributeIfPresent(context, output, "id", "aria-label");
 
-        AddPostElementAttribute(output, " data-max-suggestions", MaxSuggestions.ToString(CultureInfo.InvariantCulture));
-        AddPostElementAttribute(output, " data-similarity-threshold", SimilarityThreshold.ToString(CultureInfo.InvariantCulture));
+        AddPostElementAttribute(
+            output,
+            " data-max-suggestions",
+            MaxSuggestions.ToString(CultureInfo.InvariantCulture)
+        );
+        AddPostElementAttribute(
+            output,
+            " data-similarity-threshold",
+            SimilarityThreshold.ToString(CultureInfo.InvariantCulture)
+        );
 
         var services = ViewContext.HttpContext.RequestServices;
         var urlHelper = services.GetRequiredService<IUrlHelperFactory>().GetUrlHelper(ViewContext);
@@ -62,7 +72,11 @@ public class SmartComboBoxTagHelper : TagHelper
         return Task.CompletedTask;
     }
 
-    private static void AddPostElementAttribute(TagHelperOutput output, string nameWithLeadingSpace, string? value)
+    private static void AddPostElementAttribute(
+        TagHelperOutput output,
+        string nameWithLeadingSpace,
+        string? value
+    )
     {
         var postElement = output.PostElement;
         postElement.AppendHtml(nameWithLeadingSpace);
@@ -74,9 +88,17 @@ public class SmartComboBoxTagHelper : TagHelper
         }
     }
 
-    private static void PassThroughAttributeIfPresent(TagHelperContext context, TagHelperOutput output, string inputAttributeName, string outputAttributeName)
+    private static void PassThroughAttributeIfPresent(
+        TagHelperContext context,
+        TagHelperOutput output,
+        string inputAttributeName,
+        string outputAttributeName
+    )
     {
-        if (context.AllAttributes.TryGetAttribute(inputAttributeName, out var attrib) && attrib is { Value: HtmlString value })
+        if (
+            context.AllAttributes.TryGetAttribute(inputAttributeName, out var attrib)
+            && attrib is { Value: HtmlString value }
+        )
         {
             output.PostElement.AppendHtml($" {outputAttributeName}=\"");
             output.PostElement.AppendHtml(value);

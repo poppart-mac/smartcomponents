@@ -1,28 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
 
-    <PropertyGroup>
-        <OutputType>Exe</OutputType>
-        <TargetFramework>net8.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <Optimize>true</Optimize>
-    </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" />
+  </ItemGroup>
 
-    <ItemGroup>
-        <PackageReference Include="BenchmarkDotNet" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\SmartComponents.LocalEmbeddings\SmartComponents.LocalEmbeddings.csproj" />
+  </ItemGroup>
 
-    <ItemGroup>
-        <ProjectReference Include="..\..\src\SmartComponents.LocalEmbeddings\SmartComponents.LocalEmbeddings.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <None Update="sampledata.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 
-    <ItemGroup>
-        <None Update="sampledata.txt">
-            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </None>
-    </ItemGroup>
-
-    <!-- Only needed when referencing the dependencies as projects. For package references, these are imported automatically. -->
-    <Import Project="$(RepoRoot)src\SmartComponents.LocalEmbeddings\build\SmartComponents.LocalEmbeddings.targets" />
-
+  <!-- Only needed when referencing the dependencies as projects. For package references, these are imported automatically. -->
+  <Import Project="$(RepoRoot)src\SmartComponents.LocalEmbeddings\build\SmartComponents.LocalEmbeddings.targets" />
 </Project>

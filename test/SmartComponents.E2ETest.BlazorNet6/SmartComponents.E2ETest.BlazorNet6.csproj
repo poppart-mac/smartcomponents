@@ -1,5 +1,4 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -26,7 +25,9 @@
     <ProjectReference Include="..\testassets\TestBlazorServerNet6App\TestBlazorServerNet6App.csproj" />
 
     <!-- This should really be in a separate class library, but shared source is enough for now -->
-    <Compile Include="..\SmartComponents.E2ETest.Common\Infrastructure\**\*.cs" LinkBase="Infrastructure" />
+    <Compile
+      Include="..\SmartComponents.E2ETest.Common\Infrastructure\**\*.cs"
+      LinkBase="Infrastructure"
+    />
   </ItemGroup>
-
 </Project>

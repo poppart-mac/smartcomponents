@@ -9,7 +9,8 @@ internal sealed class SampleData
 {
     private static readonly string sampleDataPath = Path.Combine(
         Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!,
-        "sampledata.txt");
+        "sampledata.txt"
+    );
 
     private static long index;
 
@@ -21,15 +22,33 @@ internal sealed class SampleData
         .Take(1000)
         .ToArray();
 
-    public static readonly IList<(string Item, EmbeddingF32 Embedding)> EmbeddingsF32
-        = new LocalEmbedder().EmbedRange(SampleStrings);
+    public static readonly IList<(string Item, EmbeddingF32 Embedding)> EmbeddingsF32 =
+        new LocalEmbedder().EmbedRange(SampleStrings);
 
-    public static readonly IList<(string Item, EmbeddingI8 Embedding)> EmbeddingsI8
-        = EmbeddingsF32.Select(x => (x.Item, EmbeddingI8.FromModelOutput(x.Embedding.Values.Span, new byte[EmbeddingI8.GetBufferByteLength(x.Embedding.Values.Length)]))).ToList();
+    public static readonly IList<(string Item, EmbeddingI8 Embedding)> EmbeddingsI8 = EmbeddingsF32
+        .Select(x =>
+            (
+                x.Item,
+                EmbeddingI8.FromModelOutput(
+                    x.Embedding.Values.Span,
+                    new byte[EmbeddingI8.GetBufferByteLength(x.Embedding.Values.Length)]
+                )
+            )
+        )
+        .ToList();
 
-    public static readonly IList<(string Item, EmbeddingI1 Embedding)> EmbeddingsI1
-        = EmbeddingsF32.Select(x => (x.Item, EmbeddingI1.FromModelOutput(x.Embedding.Values.Span, new byte[EmbeddingI1.GetBufferByteLength(x.Embedding.Values.Length)]))).ToList();
+    public static readonly IList<(string Item, EmbeddingI1 Embedding)> EmbeddingsI1 = EmbeddingsF32
+        .Select(x =>
+            (
+                x.Item,
+                EmbeddingI1.FromModelOutput(
+                    x.Embedding.Values.Span,
+                    new byte[EmbeddingI1.GetBufferByteLength(x.Embedding.Values.Length)]
+                )
+            )
+        )
+        .ToList();
 
-    public static int NextSampleIndex
-        => (int)(Interlocked.Increment(ref index) % SampleStrings.Length);
+    public static int NextSampleIndex =>
+        (int)(Interlocked.Increment(ref index) % SampleStrings.Length);
 }

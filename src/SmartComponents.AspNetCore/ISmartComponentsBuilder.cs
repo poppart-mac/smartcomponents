@@ -7,7 +7,8 @@ namespace Microsoft.AspNetCore.Builder;
 
 public interface ISmartComponentsBuilder
 {
-    public ISmartComponentsBuilder WithInferenceBackend<T>(string? name = null) where T : class, IInferenceBackend;
+    public ISmartComponentsBuilder WithInferenceBackend<T>(string? name = null)
+        where T : class, IInferenceBackend;
 
     public ISmartComponentsBuilder WithAntiforgeryValidation();
 }

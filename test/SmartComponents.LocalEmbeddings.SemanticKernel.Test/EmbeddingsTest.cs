@@ -15,7 +15,8 @@ public class EmbeddingsTest
         ITextEmbeddingGenerationService embeddingGenerator = new LocalEmbedder();
 
         var cat = await embeddingGenerator.GenerateEmbeddingAsync("cat");
-        string[] sentences = [
+        string[] sentences =
+        [
             "dog",
             "kitten!",
             "Cats are good",
@@ -26,23 +27,28 @@ public class EmbeddingsTest
             "Elephants are here",
         ];
         var sentenceEmbeddings = await embeddingGenerator.GenerateEmbeddingsAsync(sentences);
-        var sentencesWithEmbeddings = sentences.Zip(sentenceEmbeddings, (s, e) => (Sentence: s, Embedding: e)).ToArray();
+        var sentencesWithEmbeddings = sentences
+            .Zip(sentenceEmbeddings, (s, e) => (Sentence: s, Embedding: e))
+            .ToArray();
 
         var sentencesRankedBySimilarity = sentencesWithEmbeddings
             .OrderByDescending(s => TensorPrimitives.CosineSimilarity(cat.Span, s.Embedding.Span))
             .Select(s => s.Sentence)
             .ToArray();
 
-        Assert.Equal([
-            "Cats are good",
-            "kitten!",
-            "Cats are bad",
-            "Tiger",
-            "dog",
-            "Wolf",
-            "Elephants are here",
-            "Grimsby Town FC",
-        ], sentencesRankedBySimilarity.AsSpan());
+        Assert.Equal(
+            [
+                "Cats are good",
+                "kitten!",
+                "Cats are bad",
+                "Tiger",
+                "dog",
+                "Wolf",
+                "Elephants are here",
+                "Grimsby Town FC",
+            ],
+            sentencesRankedBySimilarity.AsSpan()
+        );
     }
 
     [Fact]

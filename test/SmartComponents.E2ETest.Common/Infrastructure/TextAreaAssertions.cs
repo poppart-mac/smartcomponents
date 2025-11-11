@@ -13,9 +13,9 @@ public static class TextAreaAssertions
         Assert.Equal(start + length, await SelectionEndAsync(locator));
     }
 
-    public static Task<int> SelectionStartAsync(ILocator locator)
-        => locator.EvaluateAsync<int>("s => s.selectionStart");
+    public static Task<int> SelectionStartAsync(ILocator locator) =>
+        locator.EvaluateAsync<int>("s => s.selectionStart");
 
-    public static Task<int> SelectionEndAsync(ILocator locator)
-        => locator.EvaluateAsync<int>("s => s.selectionEnd");
+    public static Task<int> SelectionEndAsync(ILocator locator) =>
+        locator.EvaluateAsync<int>("s => s.selectionEnd");
 }

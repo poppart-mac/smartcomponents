@@ -17,11 +17,13 @@ public class Program
         builder.Configuration.AddRepoSharedConfig();
 
         // Add services to the container.
-        builder.Services.AddRazorComponents()
+        builder
+            .Services.AddRazorComponents()
             .AddInteractiveServerComponents()
             .AddInteractiveWebAssemblyComponents();
         builder.Services.AddScoped<SmartPasteInference, SmartPasteInferenceForTests>();
-        builder.Services.AddSmartComponents()
+        builder
+            .Services.AddSmartComponents()
             .WithInferenceBackend<OpenAIInferenceBackend>()
             .WithAntiforgeryValidation(); // This doesn't benefit most apps, but we'll validate it works in E2E tests
 
@@ -29,18 +31,20 @@ public class Program
 
         // Show we can work with pathbase by enforcing its use
         app.UsePathBase("/subdir");
-        app.Use(async (ctx, next) =>
-        {
-            if (!ctx.Request.PathBase.Equals("/subdir", StringComparison.OrdinalIgnoreCase))
+        app.Use(
+            async (ctx, next) =>
             {
-                ctx.Response.StatusCode = 404;
-                await ctx.Response.WriteAsync("This server only serves requests at /subdir");
+                if (!ctx.Request.PathBase.Equals("/subdir", StringComparison.OrdinalIgnoreCase))
+                {
+                    ctx.Response.StatusCode = 404;
+                    await ctx.Response.WriteAsync("This server only serves requests at /subdir");
+                }
+                else
+                {
+                    await next();
+                }
             }
-            else
-            {
-                await next();
-            }
-        });
+        );
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
@@ -62,8 +66,10 @@ public class Program
         var embedder = new LocalEmbedder();
         var accountingCategories = embedder.EmbedRange(E2ETests.TestData.AccountingCategories);
 
-        app.MapSmartComboBox("/api/accounting-categories",
-            request => embedder.FindClosest(request.Query, accountingCategories));
+        app.MapSmartComboBox(
+            "/api/accounting-categories",
+            request => embedder.FindClosest(request.Query, accountingCategories)
+        );
 
         app.MapRazorComponents<App>()
             .AddInteractiveWebAssemblyRenderMode()

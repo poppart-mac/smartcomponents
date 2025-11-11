@@ -17,7 +17,7 @@ namespace SmartComponents.LocalEmbeddings;
 ///
 /// For the default 384-dimensional embedding model, this representation takes 48 bytes per embedding,
 /// since 8 dimensions are packed into each byte.
-/// 
+///
 /// This representation is equivalent to the LSH (Locality Sensitive Hashing) index option in Faiss.
 /// It is very fast and compact, at the cost of some precision.
 /// </summary>
@@ -48,7 +48,9 @@ public readonly struct EmbeddingI1(ReadOnlyMemory<byte> buffer) : IEmbedding<Emb
         var expectedBufferLength = input.Length / 8;
         if (buffer.Length != expectedBufferLength)
         {
-            throw new InvalidOperationException($"Buffer length was {buffer.Length}, but must be {expectedBufferLength} for an input with {input.Length} dimensions.");
+            throw new InvalidOperationException(
+                $"Buffer length was {buffer.Length}, but must be {expectedBufferLength} for an input with {input.Length} dimensions."
+            );
         }
 
         Quantize(input, buffer.Span);
@@ -100,14 +102,38 @@ public readonly struct EmbeddingI1(ReadOnlyMemory<byte> buffer) : IEmbedding<Emb
                 sum |= 1;
             }
 #else
-            if (sources[0] >= 0) { sum |= 128; }
-            if (sources[1] >= 0) { sum |= 64; }
-            if (sources[2] >= 0) { sum |= 32; }
-            if (sources[3] >= 0) { sum |= 16; }
-            if (sources[4] >= 0) { sum |= 8; }
-            if (sources[5] >= 0) { sum |= 4; }
-            if (sources[6] >= 0) { sum |= 2; }
-            if (sources[7] >= 0) { sum |= 1; }
+            if (sources[0] >= 0)
+            {
+                sum |= 128;
+            }
+            if (sources[1] >= 0)
+            {
+                sum |= 64;
+            }
+            if (sources[2] >= 0)
+            {
+                sum |= 32;
+            }
+            if (sources[3] >= 0)
+            {
+                sum |= 16;
+            }
+            if (sources[4] >= 0)
+            {
+                sum |= 8;
+            }
+            if (sources[5] >= 0)
+            {
+                sum |= 4;
+            }
+            if (sources[6] >= 0)
+            {
+                sum |= 2;
+            }
+            if (sources[7] >= 0)
+            {
+                sum |= 1;
+            }
 #endif
             result[j / 8] = sum;
         }
@@ -123,7 +149,9 @@ public readonly struct EmbeddingI1(ReadOnlyMemory<byte> buffer) : IEmbedding<Emb
     {
         if (other._buffer.Length != _buffer.Length)
         {
-            throw new InvalidOperationException($"Cannot compare a {nameof(EmbeddingI1)} of length {other._buffer.Length} against one of length {_buffer.Length}");
+            throw new InvalidOperationException(
+                $"Cannot compare a {nameof(EmbeddingI1)} of length {other._buffer.Length} against one of length {_buffer.Length}"
+            );
         }
 
         // The following approach to load the vectors is considerably
@@ -146,10 +174,10 @@ public readonly struct EmbeddingI1(ReadOnlyMemory<byte> buffer) : IEmbedding<Emb
             // avx2-lookup from https://stackoverflow.com/a/50082218). However I didn't try
             // AVX512 approaches (vectorized popcnt) since hardware support is less common.
             differences +=
-                BitOperations.PopCount(xorBlock.GetElement(0)) +
-                BitOperations.PopCount(xorBlock.GetElement(1)) +
-                BitOperations.PopCount(xorBlock.GetElement(2)) +
-                BitOperations.PopCount(xorBlock.GetElement(3));
+                BitOperations.PopCount(xorBlock.GetElement(0))
+                + BitOperations.PopCount(xorBlock.GetElement(1))
+                + BitOperations.PopCount(xorBlock.GetElement(2))
+                + BitOperations.PopCount(xorBlock.GetElement(3));
 
             lhsPtr += 32;
             rhsPtr += 32;
@@ -163,8 +191,8 @@ public readonly struct EmbeddingI1(ReadOnlyMemory<byte> buffer) : IEmbedding<Emb
             var xorBlock = Vector128Xor(lhsBlock, rhsBlock).AsUInt64();
 
             differences +=
-                BitOperations.PopCount(xorBlock.GetElement(0)) +
-                BitOperations.PopCount(xorBlock.GetElement(1));
+                BitOperations.PopCount(xorBlock.GetElement(0))
+                + BitOperations.PopCount(xorBlock.GetElement(1));
 
             lhsPtr += 16;
             rhsPtr += 16;
@@ -185,15 +213,20 @@ public readonly struct EmbeddingI1(ReadOnlyMemory<byte> buffer) : IEmbedding<Emb
     }
 
     /// <inheritdoc />
-    public static int GetBufferByteLength(int dimensions)
-        => dimensions / 8;
+    public static int GetBufferByteLength(int dimensions) => dimensions / 8;
 
     sealed class BitEmbeddingJsonConverter : JsonConverter<EmbeddingI1>
     {
-        public override EmbeddingI1 Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-            => new EmbeddingI1(reader.GetBytesFromBase64());
+        public override EmbeddingI1 Read(
+            ref Utf8JsonReader reader,
+            Type typeToConvert,
+            JsonSerializerOptions options
+        ) => new EmbeddingI1(reader.GetBytesFromBase64());
 
-        public override void Write(Utf8JsonWriter writer, EmbeddingI1 value, JsonSerializerOptions options)
-            => writer.WriteBase64StringValue(value.Buffer.Span);
+        public override void Write(
+            Utf8JsonWriter writer,
+            EmbeddingI1 value,
+            JsonSerializerOptions options
+        ) => writer.WriteBase64StringValue(value.Buffer.Span);
     }
 }

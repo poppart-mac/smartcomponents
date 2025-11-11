@@ -12,10 +12,16 @@ public class Quantization
     private readonly Memory<byte> bufferForEmbeddingI1 = new byte[48];
 
     [Benchmark]
-    public void QuantizeToI8()
-        => EmbeddingI8.FromModelOutput(EmbeddingsF32[NextSampleIndex].Embedding.Values.Span, bufferForEmbeddingI8);
+    public void QuantizeToI8() =>
+        EmbeddingI8.FromModelOutput(
+            EmbeddingsF32[NextSampleIndex].Embedding.Values.Span,
+            bufferForEmbeddingI8
+        );
 
     [Benchmark]
-    public void QuantizeToI1()
-        => EmbeddingI1.FromModelOutput(EmbeddingsF32[NextSampleIndex].Embedding.Values.Span, bufferForEmbeddingI1);
+    public void QuantizeToI1() =>
+        EmbeddingI1.FromModelOutput(
+            EmbeddingsF32[NextSampleIndex].Embedding.Values.Span,
+            bufferForEmbeddingI1
+        );
 }

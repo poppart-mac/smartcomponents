@@ -9,9 +9,8 @@ namespace SmartComponents.E2ETest.Blazor;
 
 public class BlazorSmartComboBoxTest : SmartComboBoxTest<Program>
 {
-    public BlazorSmartComboBoxTest(KestrelWebApplicationFactory<Program> server) : base(server)
-    {
-    }
+    public BlazorSmartComboBoxTest(KestrelWebApplicationFactory<Program> server)
+        : base(server) { }
 
     [Theory]
     [InlineData("webassembly")]
@@ -19,7 +18,8 @@ public class BlazorSmartComboBoxTest : SmartComboBoxTest<Program>
     public async Task TriggersBindings(string host)
     {
         await Page.GotoAsync(Server.Address + "/smartcombobox/" + host);
-        await Expect(Page.Locator("#is-interactive")).ToHaveTextAsync("True", new() { Timeout = 30000 });
+        await Expect(Page.Locator("#is-interactive"))
+            .ToHaveTextAsync("True", new() { Timeout = 30000 });
 
         var input = Page.Locator("#default-params input");
         var suggestions = Page.Locator("#default-params smart-combobox");

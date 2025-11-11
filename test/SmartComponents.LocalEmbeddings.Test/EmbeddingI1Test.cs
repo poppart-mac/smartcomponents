@@ -17,7 +17,10 @@ public class EmbeddingI1Test
 
         // Check it's the same length (1 byte per 8 values)
         Assert.Equal(floats.Values.Length / 8, bitRepresentation.Buffer.Length);
-        Assert.Equal(bitRepresentation.Buffer.Length, EmbeddingI1.GetBufferByteLength(floats.Values.Length));
+        Assert.Equal(
+            bitRepresentation.Buffer.Length,
+            EmbeddingI1.GetBufferByteLength(floats.Values.Length)
+        );
 
         // Check the bits match the thresholded floats
         for (var i = 0; i < floats.Values.Length; i++)
@@ -44,9 +47,7 @@ public class EmbeddingI1Test
         using var embedder = new LocalEmbedder();
         var cat = embedder.Embed<EmbeddingI1>("cat");
         var dog = embedder.Embed<EmbeddingI1>("dog");
-        Assert.Equal(
-            LocalEmbedder.Similarity(cat, dog),
-            LocalEmbedder.Similarity(dog, cat));
+        Assert.Equal(LocalEmbedder.Similarity(cat, dog), LocalEmbedder.Similarity(dog, cat));
     }
 
     [Fact]
@@ -55,7 +56,8 @@ public class EmbeddingI1Test
         using var embedder = new LocalEmbedder();
 
         var cat = embedder.Embed<EmbeddingI1>("cat");
-        string[] sentences = [
+        string[] sentences =
+        [
             "dog",
             "kitten!",
             "Cats are good",
@@ -65,20 +67,24 @@ public class EmbeddingI1Test
             "Grimsby Town FC",
             "Elephants are here",
         ];
-        var sentencesRankedBySimilarity = sentences.OrderByDescending(
-            s => LocalEmbedder.Similarity(cat, embedder.Embed<EmbeddingI1>(s))).ToArray();
+        var sentencesRankedBySimilarity = sentences
+            .OrderByDescending(s => LocalEmbedder.Similarity(cat, embedder.Embed<EmbeddingI1>(s)))
+            .ToArray();
 
         // This ordering is close to, but not exactly the same as, the true ordering produced by the unquantized embeddings
-        Assert.Equal([
-            "kitten!",
-            "Cats are good",
-            "Cats are bad",
-            "Tiger",
-            "dog",
-            "Elephants are here",
-            "Wolf",
-            "Grimsby Town FC",
-        ], sentencesRankedBySimilarity.AsSpan());
+        Assert.Equal(
+            [
+                "kitten!",
+                "Cats are good",
+                "Cats are bad",
+                "Tiger",
+                "dog",
+                "Elephants are here",
+                "Wolf",
+                "Grimsby Town FC",
+            ],
+            sentencesRankedBySimilarity.AsSpan()
+        );
     }
 
     [Fact]

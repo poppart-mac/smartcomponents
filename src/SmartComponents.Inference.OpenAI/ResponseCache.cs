@@ -20,9 +20,10 @@ namespace SmartComponents.Inference.OpenAI;
 
 internal static class ResponseCache
 {
-    static bool IsEnabled = Environment.GetEnvironmentVariable("SMARTCOMPONENTS_E2E_TEST") == "true";
+    static bool IsEnabled =
+        Environment.GetEnvironmentVariable("SMARTCOMPONENTS_E2E_TEST") == "true";
 
-    readonly static Lazy<string> CacheDir = new(() =>
+    static readonly Lazy<string> CacheDir = new(() =>
     {
         var dir = Path.Combine(GetSolutionDirectory(), "test", "CachedResponses");
         Directory.CreateDirectory(dir);
@@ -58,15 +59,18 @@ internal static class ResponseCache
         {
             var filePath = GetCacheFilePath(request);
             File.WriteAllText(filePath, response);
-            File.WriteAllText(filePath.Replace(".response.txt", ".request.json"), GetCacheKeyInput(request));
+            File.WriteAllText(
+                filePath.Replace(".response.txt", ".request.json"),
+                GetCacheKeyInput(request)
+            );
         }
     }
 
-    private static string GetCacheFilePath(ChatParameters request)
-        => GetCacheFilePath(request, request.Messages.LastOrDefault()?.Text ?? "no_messages");
+    private static string GetCacheFilePath(ChatParameters request) =>
+        GetCacheFilePath(request, request.Messages.LastOrDefault()?.Text ?? "no_messages");
 
-    private static string GetCacheFilePath<T>(T request, string summary)
-        => Path.Combine(CacheDir.Value, $"{GetCacheKey(request, summary)}.response.txt");
+    private static string GetCacheFilePath<T>(T request, string summary) =>
+        Path.Combine(CacheDir.Value, $"{GetCacheKey(request, summary)}.response.txt");
 
     private static string GetSolutionDirectory()
     {

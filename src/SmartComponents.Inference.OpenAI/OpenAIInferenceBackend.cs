@@ -11,8 +11,7 @@ using SmartComponents.StaticAssets.Inference;
 
 namespace SmartComponents.Inference.OpenAI;
 
-public class OpenAIInferenceBackend(IConfiguration configuration)
-    : IInferenceBackend
+public class OpenAIInferenceBackend(IConfiguration configuration) : IInferenceBackend
 {
     public async Task<string> GetChatResponseAsync(ChatParameters options)
     {
@@ -33,18 +32,24 @@ public class OpenAIInferenceBackend(IConfiguration configuration)
             MaxTokens = options.MaxTokens ?? 200,
             FrequencyPenalty = options.FrequencyPenalty ?? 0,
             PresencePenalty = options.PresencePenalty ?? 0,
-            ResponseFormat = options.RespondJson ? ChatCompletionsResponseFormat.JsonObject : ChatCompletionsResponseFormat.Text,
+            ResponseFormat = options.RespondJson
+                ? ChatCompletionsResponseFormat.JsonObject
+                : ChatCompletionsResponseFormat.Text,
         };
 
         foreach (var message in options.Messages ?? Enumerable.Empty<ChatMessage>())
         {
-            chatCompletionsOptions.Messages.Add(message.Role switch
-            {
-                ChatMessageRole.System => new ChatRequestSystemMessage(message.Text),
-                ChatMessageRole.User => new ChatRequestUserMessage(message.Text),
-                ChatMessageRole.Assistant => new ChatRequestAssistantMessage(message.Text),
-                _ => throw new InvalidOperationException($"Unknown chat message role: {message.Role}")
-            });
+            chatCompletionsOptions.Messages.Add(
+                message.Role switch
+                {
+                    ChatMessageRole.System => new ChatRequestSystemMessage(message.Text),
+                    ChatMessageRole.User => new ChatRequestUserMessage(message.Text),
+                    ChatMessageRole.Assistant => new ChatRequestAssistantMessage(message.Text),
+                    _ => throw new InvalidOperationException(
+                        $"Unknown chat message role: {message.Role}"
+                    ),
+                }
+            );
         }
 
         if (options.StopSequences is { } stopSequences)
@@ -57,7 +62,8 @@ public class OpenAIInferenceBackend(IConfiguration configuration)
 
         var completionsResponse = await client.GetChatCompletionsAsync(chatCompletionsOptions);
 
-        var response = completionsResponse.Value.Choices.FirstOrDefault()?.Message.Content ?? string.Empty;
+        var response =
+            completionsResponse.Value.Choices.FirstOrDefault()?.Message.Content ?? string.Empty;
 
 #if DEBUG
         ResponseCache.SetCachedResponse(options, response);
@@ -81,9 +87,7 @@ public class OpenAIInferenceBackend(IConfiguration configuration)
         else
         {
             // Azure OpenAI
-            return new OpenAIClient(
-                apiConfig.Endpoint,
-                new AzureKeyCredential(apiConfig.ApiKey!));
+            return new OpenAIClient(apiConfig.Endpoint, new AzureKeyCredential(apiConfig.ApiKey!));
         }
     }
 }

@@ -26,7 +26,8 @@ public class EmbeddingI8Test
         Assert.Equal(bytes.Buffer.Length, EmbeddingI8.GetBufferByteLength(floats.Values.Length));
 
         // Work out how we expect the floats to be scaled
-        var expectedScaleFactor = sbyte.MaxValue / Math.Abs(TensorPrimitives.MaxMagnitude(floats.Values.Span));
+        var expectedScaleFactor =
+            sbyte.MaxValue / Math.Abs(TensorPrimitives.MaxMagnitude(floats.Values.Span));
         var scaledFloats = new float[floats.Values.Length];
         TensorPrimitives.Multiply(floats.Values.Span, expectedScaleFactor, scaledFloats);
 
@@ -54,9 +55,7 @@ public class EmbeddingI8Test
         using var embedder = new LocalEmbedder();
         var cat = embedder.Embed<EmbeddingI8>("cat");
         var dog = embedder.Embed<EmbeddingI8>("dog");
-        Assert.Equal(
-            LocalEmbedder.Similarity(cat, dog),
-            LocalEmbedder.Similarity(dog, cat));
+        Assert.Equal(LocalEmbedder.Similarity(cat, dog), LocalEmbedder.Similarity(dog, cat));
     }
 
     [Fact]
@@ -65,7 +64,8 @@ public class EmbeddingI8Test
         using var embedder = new LocalEmbedder();
 
         var cat = embedder.Embed<EmbeddingI8>("cat");
-        string[] sentences = [
+        string[] sentences =
+        [
             "dog",
             "kitten!",
             "Cats are good",
@@ -75,19 +75,23 @@ public class EmbeddingI8Test
             "Grimsby Town FC",
             "Elephants are here",
         ];
-        var sentencesRankedBySimilarity = sentences.OrderByDescending(
-            s => LocalEmbedder.Similarity(cat, embedder.Embed<EmbeddingI8>(s))).ToArray();
+        var sentencesRankedBySimilarity = sentences
+            .OrderByDescending(s => LocalEmbedder.Similarity(cat, embedder.Embed<EmbeddingI8>(s)))
+            .ToArray();
 
-        Assert.Equal([
-            "Cats are good",
-            "kitten!",
-            "Cats are bad",
-            "Tiger",
-            "dog",
-            "Wolf",
-            "Elephants are here",
-            "Grimsby Town FC",
-        ], sentencesRankedBySimilarity.AsSpan());
+        Assert.Equal(
+            [
+                "Cats are good",
+                "kitten!",
+                "Cats are bad",
+                "Tiger",
+                "dog",
+                "Wolf",
+                "Elephants are here",
+                "Grimsby Town FC",
+            ],
+            sentencesRankedBySimilarity.AsSpan()
+        );
     }
 
     [Fact]

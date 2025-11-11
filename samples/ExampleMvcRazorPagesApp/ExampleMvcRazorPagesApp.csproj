@@ -1,23 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <LangVersion>latest</LangVersion>
+  </PropertyGroup>
 
-    <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <Nullable>enable</Nullable>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <LangVersion>latest</LangVersion>
-    </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\SmartComponents.AspNetCore\SmartComponents.AspNetCore.csproj" />
+    <ProjectReference Include="..\..\src\SmartComponents.Inference.OpenAI\SmartComponents.Inference.OpenAI.csproj" />
+    <ProjectReference Include="..\..\src\SmartComponents.LocalEmbeddings\SmartComponents.LocalEmbeddings.csproj" />
+  </ItemGroup>
 
-    <ItemGroup>
-        <ProjectReference Include="..\..\src\SmartComponents.AspNetCore\SmartComponents.AspNetCore.csproj" />
-        <ProjectReference Include="..\..\src\SmartComponents.Inference.OpenAI\SmartComponents.Inference.OpenAI.csproj" />
-        <ProjectReference Include="..\..\src\SmartComponents.LocalEmbeddings\SmartComponents.LocalEmbeddings.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <Compile Include="$(SharedSrcRoot)RepoSharedConfigUtil.cs" />
+  </ItemGroup>
 
-    <ItemGroup>
-        <Compile Include="$(SharedSrcRoot)RepoSharedConfigUtil.cs" />
-    </ItemGroup>
-
-    <!-- Only needed when referencing the dependencies as projects. For package references, these are imported automatically. -->
-    <Import Project="$(RepoRoot)src\SmartComponents.LocalEmbeddings\build\SmartComponents.LocalEmbeddings.targets" />
-
+  <!-- Only needed when referencing the dependencies as projects. For package references, these are imported automatically. -->
+  <Import Project="$(RepoRoot)src\SmartComponents.LocalEmbeddings\build\SmartComponents.LocalEmbeddings.targets" />
 </Project>

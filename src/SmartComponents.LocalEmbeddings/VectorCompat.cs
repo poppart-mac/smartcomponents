@@ -19,12 +19,15 @@ internal static class VectorCompat
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static unsafe Vector256<T> Vector256Load<T>(T* ptr) where T : unmanaged
+    public static unsafe Vector256<T> Vector256Load<T>(T* ptr)
+        where T : unmanaged
     {
 #if NET8_0_OR_GREATER
         return Vector256.Load(ptr);
 #else
-        return Vector256.Create(((long*)ptr)[0], ((long*)ptr)[1], ((long*)ptr)[2], ((long*)ptr)[3]).As<long, T>();
+        return Vector256
+            .Create(((long*)ptr)[0], ((long*)ptr)[1], ((long*)ptr)[2], ((long*)ptr)[3])
+            .As<long, T>();
 #endif
     }
 
@@ -34,7 +37,9 @@ internal static class VectorCompat
 #if NET8_0_OR_GREATER
         return Vector256.Load(ptr);
 #else
-        return Vector256.Create(((long*)ptr)[0], ((long*)ptr)[1], ((long*)ptr)[2], ((long*)ptr)[3]).AsSingle();
+        return Vector256
+            .Create(((long*)ptr)[0], ((long*)ptr)[1], ((long*)ptr)[2], ((long*)ptr)[3])
+            .AsSingle();
 #endif
     }
 
@@ -57,12 +62,14 @@ internal static class VectorCompat
         // Assume the target platform at least supports 128-bit vectors
         return Vector256.Create(
             Vector128Xor(lhs.GetLower(), rhs.GetLower()),
-            Vector128Xor(lhs.GetUpper(), rhs.GetUpper()));
+            Vector128Xor(lhs.GetUpper(), rhs.GetUpper())
+        );
 #endif
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static unsafe Vector256<T> Vector256Multiply<T>(Vector256<T> vector, T value) where T : unmanaged
+    public static unsafe Vector256<T> Vector256Multiply<T>(Vector256<T> vector, T value)
+        where T : unmanaged
     {
 #if NET8_0_OR_GREATER
         return vector * value;
@@ -93,12 +100,14 @@ internal static class VectorCompat
 #else
         return Vector256.Create(
             Vector128Add(lhs.GetLower(), rhs.GetLower()),
-            Vector128Add(lhs.GetUpper(), rhs.GetUpper()));
+            Vector128Add(lhs.GetUpper(), rhs.GetUpper())
+        );
 #endif
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static unsafe Vector128<T> Vector128Multiply<T>(Vector128<T> lhs, Vector128<T> rhs) where T : unmanaged
+    public static unsafe Vector128<T> Vector128Multiply<T>(Vector128<T> lhs, Vector128<T> rhs)
+        where T : unmanaged
     {
 #if NET8_0_OR_GREATER
         return lhs * rhs;
@@ -109,19 +118,24 @@ internal static class VectorCompat
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static unsafe Vector256<T> Vector256Multiply<T>(Vector256<T> lhs, Vector256<T> rhs) where T : unmanaged
+    public static unsafe Vector256<T> Vector256Multiply<T>(Vector256<T> lhs, Vector256<T> rhs)
+        where T : unmanaged
     {
 #if NET8_0_OR_GREATER
         return lhs * rhs;
 #else
-        return Vector256.Create(
-            Vector128Multiply(lhs.GetLower(), rhs.GetLower()).AsByte(),
-            Vector128Multiply(lhs.GetUpper(), rhs.GetUpper()).AsByte()).As<byte, T>();
+        return Vector256
+            .Create(
+                Vector128Multiply(lhs.GetLower(), rhs.GetLower()).AsByte(),
+                Vector128Multiply(lhs.GetUpper(), rhs.GetUpper()).AsByte()
+            )
+            .As<byte, T>();
 #endif
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static unsafe T Vector128Sum<T>(Vector128<T> vector) where T : unmanaged
+    public static unsafe T Vector128Sum<T>(Vector128<T> vector)
+        where T : unmanaged
     {
 #if NET8_0_OR_GREATER
         return Vector128.Sum(vector);
@@ -132,15 +146,14 @@ internal static class VectorCompat
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static unsafe T Vector256Sum<T>(Vector256<T> vector) where T : unmanaged
+    public static unsafe T Vector256Sum<T>(Vector256<T> vector)
+        where T : unmanaged
     {
 #if NET8_0_OR_GREATER
         return Vector256.Sum(vector);
 #else
         // Assume the target platform at least supports 128-bit vectors
-        return Vector.Sum(Vector.Add(
-            vector.GetLower().AsVector(),
-            vector.GetUpper().AsVector()));
+        return Vector.Sum(Vector.Add(vector.GetLower().AsVector(), vector.GetUpper().AsVector()));
 #endif
     }
 
@@ -158,11 +171,14 @@ internal static class VectorCompat
         {
             return Vector256.Create(
                 AdvSimd.ConvertToInt32RoundToZero(vector.GetLower()),
-                AdvSimd.ConvertToInt32RoundToZero(vector.GetUpper()));
+                AdvSimd.ConvertToInt32RoundToZero(vector.GetUpper())
+            );
         }
         else
         {
-            throw new PlatformNotSupportedException("This operation requires .NET 8, or a CPU that supports AVX (x86) or AdvSIMD (ARM).");
+            throw new PlatformNotSupportedException(
+                "This operation requires .NET 8, or a CPU that supports AVX (x86) or AdvSIMD (ARM)."
+            );
         }
 #endif
     }
@@ -181,17 +197,21 @@ internal static class VectorCompat
         {
             return Vector256.Create(
                 AdvSimd.ConvertToSingle(vector.GetLower()),
-                AdvSimd.ConvertToSingle(vector.GetUpper()));
+                AdvSimd.ConvertToSingle(vector.GetUpper())
+            );
         }
         else
         {
-            throw new PlatformNotSupportedException("This operation requires .NET 8, or a CPU that supports AVX (x86) or AdvSIMD (ARM).");
+            throw new PlatformNotSupportedException(
+                "This operation requires .NET 8, or a CPU that supports AVX (x86) or AdvSIMD (ARM)."
+            );
         }
 #endif
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
-    public static unsafe void Vector64Store<T>(Vector64<T> vector, T* destination) where T : unmanaged
+    public static unsafe void Vector64Store<T>(Vector64<T> vector, T* destination)
+        where T : unmanaged
     {
 #if NET8_0_OR_GREATER
         Vector64.Store(vector, destination);
@@ -214,11 +234,14 @@ internal static class VectorCompat
         {
             return Vector256.Create(
                 AdvSimd.AddWideningLower(Vector128<int>.Zero, vector.GetLower().GetLower()),
-                AdvSimd.AddWideningLower(Vector128<int>.Zero, vector.GetLower().GetUpper()));
+                AdvSimd.AddWideningLower(Vector128<int>.Zero, vector.GetLower().GetUpper())
+            );
         }
         else
         {
-            throw new PlatformNotSupportedException("This operation requires .NET 8, or a CPU that supports AVX (x86) or AdvSIMD (ARM).");
+            throw new PlatformNotSupportedException(
+                "This operation requires .NET 8, or a CPU that supports AVX (x86) or AdvSIMD (ARM)."
+            );
         }
 #endif
     }
@@ -237,11 +260,14 @@ internal static class VectorCompat
         {
             return Vector256.Create(
                 AdvSimd.AddWideningLower(Vector128<int>.Zero, vector.GetUpper().GetLower()),
-                AdvSimd.AddWideningLower(Vector128<int>.Zero, vector.GetUpper().GetUpper()));
+                AdvSimd.AddWideningLower(Vector128<int>.Zero, vector.GetUpper().GetUpper())
+            );
         }
         else
         {
-            throw new PlatformNotSupportedException("This operation requires .NET 8, or a CPU that supports AVX (x86) or AdvSIMD (ARM).");
+            throw new PlatformNotSupportedException(
+                "This operation requires .NET 8, or a CPU that supports AVX (x86) or AdvSIMD (ARM)."
+            );
         }
 #endif
     }
@@ -260,11 +286,14 @@ internal static class VectorCompat
         {
             return Vector256.Create(
                 AdvSimd.AddWideningLower(Vector128<short>.Zero, vector.GetLower().GetLower()),
-                AdvSimd.AddWideningLower(Vector128<short>.Zero, vector.GetLower().GetUpper()));
+                AdvSimd.AddWideningLower(Vector128<short>.Zero, vector.GetLower().GetUpper())
+            );
         }
         else
         {
-            throw new PlatformNotSupportedException("This operation requires .NET 8, or a CPU that supports AVX (x86) or AdvSIMD (ARM).");
+            throw new PlatformNotSupportedException(
+                "This operation requires .NET 8, or a CPU that supports AVX (x86) or AdvSIMD (ARM)."
+            );
         }
 #endif
     }
@@ -283,11 +312,14 @@ internal static class VectorCompat
         {
             return Vector256.Create(
                 AdvSimd.AddWideningLower(Vector128<short>.Zero, vector.GetUpper().GetLower()),
-                AdvSimd.AddWideningLower(Vector128<short>.Zero, vector.GetUpper().GetUpper()));
+                AdvSimd.AddWideningLower(Vector128<short>.Zero, vector.GetUpper().GetUpper())
+            );
         }
         else
         {
-            throw new PlatformNotSupportedException("This operation requires .NET 8, or a CPU that supports AVX (x86) or AdvSIMD (ARM).");
+            throw new PlatformNotSupportedException(
+                "This operation requires .NET 8, or a CPU that supports AVX (x86) or AdvSIMD (ARM)."
+            );
         }
 #endif
     }

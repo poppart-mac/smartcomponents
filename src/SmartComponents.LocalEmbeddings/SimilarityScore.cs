@@ -15,13 +15,16 @@ public readonly struct SimilarityScore<T>(float similarity, T item)
     // from the SortedSet, we need it to remove only 1 item, not all with the same similarity.
     private readonly long _uniqueIndex;
 
-    internal SimilarityScore(float similarity, T item, long uniqueIndex) : this(similarity, item) => _uniqueIndex = uniqueIndex;
+    internal SimilarityScore(float similarity, T item, long uniqueIndex)
+        : this(similarity, item) => _uniqueIndex = uniqueIndex;
 
-    internal static readonly IComparer<SimilarityScore<T>> _comparer = Comparer<SimilarityScore<T>>.Create((a, b) =>
-    {
-        var comparison = b.Similarity.CompareTo(a.Similarity);
-        return comparison == 0
-            ? a._uniqueIndex.CompareTo(b._uniqueIndex)
-            : comparison;
-    });
+    internal static readonly IComparer<SimilarityScore<T>> _comparer = Comparer<
+        SimilarityScore<T>
+    >.Create(
+        (a, b) =>
+        {
+            var comparison = b.Similarity.CompareTo(a.Similarity);
+            return comparison == 0 ? a._uniqueIndex.CompareTo(b._uniqueIndex) : comparison;
+        }
+    );
 }

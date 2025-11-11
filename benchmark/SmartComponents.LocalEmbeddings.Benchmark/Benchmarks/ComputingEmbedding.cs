@@ -11,10 +11,10 @@ public class ComputingEmbedding
     private readonly LocalEmbedder localEmbedder = new();
 
     [Benchmark]
-    public void ComputeEmbedding()
-        => localEmbedder.Embed<EmbeddingF32>(SampleStrings[NextSampleIndex]);
+    public void ComputeEmbedding() =>
+        localEmbedder.Embed<EmbeddingF32>(SampleStrings[NextSampleIndex]);
 
     [Benchmark]
-    public void ComputeEmbeddingOfMassiveString()
-        => localEmbedder.Embed<EmbeddingF32>(SampleData.LongString);
+    public void ComputeEmbeddingOfMassiveString() =>
+        localEmbedder.Embed<EmbeddingF32>(SampleData.LongString);
 }

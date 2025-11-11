@@ -6,9 +6,11 @@ using SmartComponents.StaticAssets.Inference;
 
 namespace Microsoft.AspNetCore.Builder;
 
-internal sealed class DefaultSmartComponentsBuilder(IServiceCollection services) : ISmartComponentsBuilder
+internal sealed class DefaultSmartComponentsBuilder(IServiceCollection services)
+    : ISmartComponentsBuilder
 {
-    public ISmartComponentsBuilder WithInferenceBackend<T>(string? name) where T : class, IInferenceBackend
+    public ISmartComponentsBuilder WithInferenceBackend<T>(string? name)
+        where T : class, IInferenceBackend
     {
         if (string.IsNullOrEmpty(name))
         {

@@ -28,7 +28,9 @@ public class SmartTextAreaTagHelper : TagHelper
         // the kinds of suggestions you want.
         if (string.IsNullOrEmpty(UserRole))
         {
-            throw new InvalidOperationException($"<smart-textarea> requires a non-null, non-empty 'user-role' parameter.");
+            throw new InvalidOperationException(
+                $"<smart-textarea> requires a non-null, non-empty 'user-role' parameter."
+            );
         }
 
         output.TagName = "textarea";
@@ -40,7 +42,11 @@ public class SmartTextAreaTagHelper : TagHelper
         var urlHelper = services.GetRequiredService<IUrlHelperFactory>().GetUrlHelper(ViewContext);
 
         output.PostElement.SetHtmlContent("<smart-textarea");
-        AddPostElementAttribute(output, " data-url", urlHelper.Content("~/_smartcomponents/smarttextarea"));
+        AddPostElementAttribute(
+            output,
+            " data-url",
+            urlHelper.Content("~/_smartcomponents/smarttextarea")
+        );
 
         var config = new SmartTextAreaConfig { UserRole = UserRole, UserPhrases = UserPhrases };
         AddPostElementAttribute(output, " data-config", JsonSerializer.Serialize(config));
@@ -56,7 +62,11 @@ public class SmartTextAreaTagHelper : TagHelper
         output.PostElement.AppendHtml("></smart-textarea>");
     }
 
-    private static void AddPostElementAttribute(TagHelperOutput output, string nameWithLeadingSpace, string? value)
+    private static void AddPostElementAttribute(
+        TagHelperOutput output,
+        string nameWithLeadingSpace,
+        string? value
+    )
     {
         var postElement = output.PostElement;
         postElement.AppendHtml(nameWithLeadingSpace);

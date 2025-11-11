@@ -24,18 +24,20 @@ public class Program
 
         // Show we can work with pathbase by enforcing its use
         app.UsePathBase("/subdir");
-        app.Use(async (ctx, next) =>
-        {
-            if (!ctx.Request.PathBase.Equals("/subdir", StringComparison.OrdinalIgnoreCase))
+        app.Use(
+            async (ctx, next) =>
             {
-                ctx.Response.StatusCode = 404;
-                await ctx.Response.WriteAsync("This server only serves requests at /subdir");
+                if (!ctx.Request.PathBase.Equals("/subdir", StringComparison.OrdinalIgnoreCase))
+                {
+                    ctx.Response.StatusCode = 404;
+                    await ctx.Response.WriteAsync("This server only serves requests at /subdir");
+                }
+                else
+                {
+                    await next();
+                }
             }
-            else
-            {
-                await next();
-            }
-        });
+        );
 
         // Configure the HTTP request pipeline.
         if (!app.Environment.IsDevelopment())

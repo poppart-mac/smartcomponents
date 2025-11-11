@@ -7,14 +7,12 @@ namespace SmartComponents.E2ETest.Mvc;
 
 public class MvcSmartTextAreaInlineTest : SmartTextAreaInlineTest<Program>
 {
-    public MvcSmartTextAreaInlineTest(KestrelWebApplicationFactory<Program> server) : base(server)
-    {
-    }
+    public MvcSmartTextAreaInlineTest(KestrelWebApplicationFactory<Program> server)
+        : base(server) { }
 }
 
 public class MvcSmartTextAreaOverlayTest : SmartTextAreaOverlayTest<Program>
 {
-    public MvcSmartTextAreaOverlayTest(KestrelWebApplicationFactory<Program> server) : base(server)
-    {
-    }
+    public MvcSmartTextAreaOverlayTest(KestrelWebApplicationFactory<Program> server)
+        : base(server) { }
 }

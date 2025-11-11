@@ -7,40 +7,16 @@ namespace SmartComponents.Inference;
 
 public class ChatParameters
 {
-    public IList<ChatMessage>? Messages
-    {
-        get; set;
-    }
-    public float? Temperature
-    {
-        get; set;
-    }
-    public float? TopP
-    {
-        get; set;
-    }
-    public int? MaxTokens
-    {
-        get; set;
-    }
-    public float? FrequencyPenalty
-    {
-        get; set;
-    }
-    public float? PresencePenalty
-    {
-        get; set;
-    }
-    public IList<string>? StopSequences
-    {
-        get; set;
-    }
+    public IList<ChatMessage>? Messages { get; set; }
+    public float? Temperature { get; set; }
+    public float? TopP { get; set; }
+    public int? MaxTokens { get; set; }
+    public float? FrequencyPenalty { get; set; }
+    public float? PresencePenalty { get; set; }
+    public IList<string>? StopSequences { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-    public bool RespondJson
-    {
-        get; set;
-    }
+    public bool RespondJson { get; set; }
 }
 
 public class ChatMessage(ChatMessageRole role, string text)

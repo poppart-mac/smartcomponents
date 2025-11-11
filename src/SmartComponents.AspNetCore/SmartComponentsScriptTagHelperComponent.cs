@@ -19,12 +19,17 @@ internal sealed class SmartComponentsScriptTagHelperComponent : TagHelperCompone
         if (string.Equals(context.TagName, "body", StringComparison.OrdinalIgnoreCase))
         {
             var httpContext = ViewContext.HttpContext;
-            var fileVersionProvider = httpContext.RequestServices.GetRequiredService<IFileVersionProvider>();
+            var fileVersionProvider =
+                httpContext.RequestServices.GetRequiredService<IFileVersionProvider>();
             var pathBase = httpContext.Request.PathBase;
             var relativeSrc = UriHelper.BuildRelative(
                 pathBase,
-                "/_content/SmartComponents.AspNetCore.Components/SmartComponents.AspNetCore.Components.lib.module.js");
-            var srcWithFileVersion = fileVersionProvider.AddFileVersionToPath(pathBase, relativeSrc);
+                "/_content/SmartComponents.AspNetCore.Components/SmartComponents.AspNetCore.Components.lib.module.js"
+            );
+            var srcWithFileVersion = fileVersionProvider.AddFileVersionToPath(
+                pathBase,
+                relativeSrc
+            );
 
             output.PostContent.AppendHtml("<script type=\"module\" src=\"");
             output.PostContent.Append(srcWithFileVersion);

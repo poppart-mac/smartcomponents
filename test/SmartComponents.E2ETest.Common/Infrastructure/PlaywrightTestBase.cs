@@ -7,7 +7,9 @@ using Microsoft.Playwright;
 namespace SmartComponents.E2ETest.Common.Infrastructure;
 
 public abstract class PlaywrightTestBase<TStartup>
-    : IAsyncLifetime, IClassFixture<KestrelWebApplicationFactory<TStartup>> where TStartup : class
+    : IAsyncLifetime,
+        IClassFixture<KestrelWebApplicationFactory<TStartup>>
+    where TStartup : class
 {
     protected KestrelWebApplicationFactory<TStartup> Server { get; }
     protected IPlaywright Playwright { get; private set; } = default!;
@@ -22,20 +24,19 @@ public abstract class PlaywrightTestBase<TStartup>
     public async Task InitializeAsync()
     {
         Playwright = await Microsoft.Playwright.Playwright.CreateAsync();
-        Browser = await Playwright.Chromium.LaunchAsync(new()
-        {
-            Headless = !Debugger.IsAttached,
-        });
+        Browser = await Playwright.Chromium.LaunchAsync(new() { Headless = !Debugger.IsAttached });
 
         if (Page is not null)
         {
             // Otherwise we have to deal with unsubscribing from Page.PageError
-            throw new InvalidOperationException("Cannot intialize a new page when one is already initialized");
+            throw new InvalidOperationException(
+                "Cannot intialize a new page when one is already initialized"
+            );
         }
 
         Page = await Browser.NewPageAsync();
-        Page.PageError += (_, message)
-            => throw new InvalidOperationException("Page error: " + message);
+        Page.PageError += (_, message) =>
+            throw new InvalidOperationException("Page error: " + message);
         await OnBrowserReadyAsync();
     }
 
@@ -45,6 +46,5 @@ public abstract class PlaywrightTestBase<TStartup>
         Playwright.Dispose();
     }
 
-    protected virtual Task OnBrowserReadyAsync()
-        => Task.CompletedTask;
+    protected virtual Task OnBrowserReadyAsync() => Task.CompletedTask;
 }

@@ -12,7 +12,9 @@ public static class RepoSharedConfigUtil
         // across multiple projects. For real usage, just add the required
         // config values to your appsettings.json file.
 
-        var envVarPath = Environment.GetEnvironmentVariable("SMARTCOMPONENTS_REPO_CONFIG_FILE_PATH");
+        var envVarPath = Environment.GetEnvironmentVariable(
+            "SMARTCOMPONENTS_REPO_CONFIG_FILE_PATH"
+        );
         if (!string.IsNullOrEmpty(envVarPath))
         {
             configuration.AddJsonFile(envVarPath);
@@ -41,8 +43,10 @@ public static class RepoSharedConfigUtil
 
     public static Exception? GetConfigError(IConfiguration config)
     {
-        var apiConfigType = typeof(OpenAIInferenceBackend).Assembly
-            .GetType("SmartComponents.Inference.OpenAI.ApiConfig", true)!;
+        var apiConfigType = typeof(OpenAIInferenceBackend).Assembly.GetType(
+            "SmartComponents.Inference.OpenAI.ApiConfig",
+            true
+        )!;
         try
         {
             _ = Activator.CreateInstance(apiConfigType, config);

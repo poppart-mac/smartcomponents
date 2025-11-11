@@ -10,8 +10,8 @@ namespace SmartComponents.LocalEmbeddings;
 
 public partial class LocalEmbedder
 {
-    public static float Similarity<TEmbedding>(TEmbedding a, TEmbedding b) where TEmbedding : IEmbedding<TEmbedding>
-        => a.Similarity(b);
+    public static float Similarity<TEmbedding>(TEmbedding a, TEmbedding b)
+        where TEmbedding : IEmbedding<TEmbedding> => a.Similarity(b);
 
     /// <summary>
     /// Finds the closest matching items to the specified query based on similarity.
@@ -25,8 +25,18 @@ public partial class LocalEmbedder
     /// name="query.MinSimilarity"/>.</returns>
     public TItem[] FindClosest<TItem, TEmbedding>(
         SimilarityQuery query,
-        IEnumerable<(TItem Item, TEmbedding Embedding)> candidates) where TEmbedding : IEmbedding<TEmbedding>
-        => [.. FindClosestCore(Embed<TEmbedding>(query.SearchText), candidates, query.MaxResults, query.MinSimilarity).Select(x => x.Item)];
+        IEnumerable<(TItem Item, TEmbedding Embedding)> candidates
+    )
+        where TEmbedding : IEmbedding<TEmbedding> =>
+        [
+            .. FindClosestCore(
+                    Embed<TEmbedding>(query.SearchText),
+                    candidates,
+                    query.MaxResults,
+                    query.MinSimilarity
+                )
+                .Select(x => x.Item),
+        ];
 
     /// <summary>
     /// Finds the closest items to the specified query, along with their similarity scores.
@@ -42,8 +52,17 @@ public partial class LocalEmbedder
     /// The array is sorted in descending order of similarity.</returns>
     public SimilarityScore<TItem>[] FindClosestWithScore<TItem, TEmbedding>(
         SimilarityQuery query,
-        IEnumerable<(TItem Item, TEmbedding Embedding)> candidates) where TEmbedding : IEmbedding<TEmbedding>
-        => [.. FindClosestCore(Embed<TEmbedding>(query.SearchText), candidates, query.MaxResults, query.MinSimilarity)];
+        IEnumerable<(TItem Item, TEmbedding Embedding)> candidates
+    )
+        where TEmbedding : IEmbedding<TEmbedding> =>
+        [
+            .. FindClosestCore(
+                Embed<TEmbedding>(query.SearchText),
+                candidates,
+                query.MaxResults,
+                query.MinSimilarity
+            ),
+        ];
 
     /// <summary>
     /// Finds the closest <paramref name="maxResults"/> candidates to <paramref name="target"/>.
@@ -59,8 +78,10 @@ public partial class LocalEmbedder
         TEmbedding target,
         IEnumerable<(TItem Item, TEmbedding Embedding)> candidates,
         int maxResults,
-        float? minSimilarity = null) where TEmbedding : IEmbedding<TEmbedding>
-        => [.. FindClosestCore(target, candidates, maxResults, minSimilarity).Select(x => x.Item)];
+        float? minSimilarity = null
+    )
+        where TEmbedding : IEmbedding<TEmbedding> =>
+        [.. FindClosestCore(target, candidates, maxResults, minSimilarity).Select(x => x.Item)];
 
     /// <summary>
     /// Finds the closest <paramref name="maxResults"/> candidates to <paramref name="target"/>,
@@ -77,14 +98,18 @@ public partial class LocalEmbedder
         TEmbedding target,
         IEnumerable<(TItem Item, TEmbedding Embedding)> candidates,
         int maxResults,
-        float? minSimilarity = null) where TEmbedding : IEmbedding<TEmbedding>
-        => [.. FindClosestCore(target, candidates, maxResults, minSimilarity)];
+        float? minSimilarity = null
+    )
+        where TEmbedding : IEmbedding<TEmbedding> =>
+        [.. FindClosestCore(target, candidates, maxResults, minSimilarity)];
 
     private static SortedSet<SimilarityScore<TItem>> FindClosestCore<TItem, TEmbedding>(
         TEmbedding target,
         IEnumerable<(TItem Item, TEmbedding Embedding)> candidates,
         int maxResults,
-        float? minSimilarity = null) where TEmbedding : IEmbedding<TEmbedding>
+        float? minSimilarity = null
+    )
+        where TEmbedding : IEmbedding<TEmbedding>
     {
         if (maxResults <= 0)
         {

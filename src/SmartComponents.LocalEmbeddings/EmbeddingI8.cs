@@ -6,21 +6,21 @@ using System.Numerics.Tensors;
 using System.Runtime.Intrinsics;
 using System.Runtime.Intrinsics.Arm;
 using System.Runtime.Intrinsics.X86;
+using System.Text.Json;
+using System.Text.Json.Serialization;
+using static SmartComponents.LocalEmbeddings.VectorCompat;
 #if NET8_0_OR_GREATER
 using System.Runtime.CompilerServices;
 #else
 using System.Runtime.InteropServices;
 #endif
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using static SmartComponents.LocalEmbeddings.VectorCompat;
 
 namespace SmartComponents.LocalEmbeddings;
 
 /// <summary>
 /// Represents an embedded value using a <see cref="byte"/> for each dimension, plus an extra
 /// 4 bytes to hold a scale factor.
-/// 
+///
 /// For the default 384-dimensional embedding model, this representation takes 388 bytes per embedding.
 /// </summary>
 [JsonConverter(typeof(ByteEmbeddingJsonConverter))]
@@ -72,7 +72,9 @@ public readonly struct EmbeddingI8 : IEmbedding<EmbeddingI8>
         var requiredBufferLength = GetBufferByteLength(input.Length);
         if (buffer.Length != requiredBufferLength)
         {
-            throw new InvalidOperationException($"For an input with {input.Length} dimensions, the buffer length must be equal to {requiredBufferLength}, but it was {buffer.Length}.");
+            throw new InvalidOperationException(
+                $"For an input with {input.Length} dimensions, the buffer length must be equal to {requiredBufferLength}, but it was {buffer.Length}."
+            );
         }
 
         fixed (float* inputPtr = input)
@@ -93,14 +95,18 @@ public readonly struct EmbeddingI8 : IEmbedding<EmbeddingI8>
 
                     if (Sse2.IsSupported)
                     {
-                        var packedShort = Sse2.PackSignedSaturate(blockInt.GetLower(), blockInt.GetUpper());
+                        var packedShort = Sse2.PackSignedSaturate(
+                            blockInt.GetLower(),
+                            blockInt.GetUpper()
+                        );
                         packedSByte = Sse2.PackSignedSaturate(packedShort, packedShort).GetLower();
                     }
                     else if (AdvSimd.IsSupported)
                     {
                         var packedShort = Vector128.Create(
                             AdvSimd.ExtractNarrowingLower(blockInt.GetLower()),
-                            AdvSimd.ExtractNarrowingLower(blockInt.GetUpper()));
+                            AdvSimd.ExtractNarrowingLower(blockInt.GetUpper())
+                        );
                         packedSByte = AdvSimd.ExtractNarrowingLower(packedShort);
                     }
                     else
@@ -114,11 +120,15 @@ public readonly struct EmbeddingI8 : IEmbedding<EmbeddingI8>
                             blockIntByte.GetElement(16),
                             blockIntByte.GetElement(20),
                             blockIntByte.GetElement(24),
-                            blockIntByte.GetElement(28));
+                            blockIntByte.GetElement(28)
+                        );
                     }
 
                     Vector64Store(packedSByte.AsByte(), bufferPtr + pos);
-                    magnitudeSquareds = Vector256Add(magnitudeSquareds, Vector256Multiply(blockInt, blockInt));
+                    magnitudeSquareds = Vector256Add(
+                        magnitudeSquareds,
+                        Vector256Multiply(blockInt, blockInt)
+                    );
                 }
             }
 
@@ -141,14 +151,18 @@ public readonly struct EmbeddingI8 : IEmbedding<EmbeddingI8>
         var length = _values.Length;
         if (other._values.Length != length)
         {
-            throw new InvalidOperationException($"This is of length {_values.Length}, whereas {nameof(other)} is of length {other._values.Length}. They must be equal length.");
+            throw new InvalidOperationException(
+                $"This is of length {_values.Length}, whereas {nameof(other)} is of length {other._values.Length}. They must be equal length."
+            );
         }
 
         if (length % Vec256ByteLength != 0)
         {
             // Otherwise LoadVector256 will read beyond the end of the buffer for the last block, and we'd have to
             // explicitly do something to avoid that (or zero out the leftover vector slots)
-            throw new InvalidOperationException($"The vector length must be a multiple of {Vec256ByteLength}. Received vector of length {length}");
+            throw new InvalidOperationException(
+                $"The vector length must be a multiple of {Vec256ByteLength}. Received vector of length {length}"
+            );
         }
 
         Vector256<int> sumsOfProducts = default;
@@ -166,14 +180,19 @@ public readonly struct EmbeddingI8 : IEmbedding<EmbeddingI8>
                 var otherVecShort = Vector256WidenLower(otherVecSByte);
                 if (Avx2.IsSupported)
                 {
-                    sumsOfProducts = Vector256Add(sumsOfProducts, Avx2.MultiplyAddAdjacent(thisVecShort, otherVecShort));
+                    sumsOfProducts = Vector256Add(
+                        sumsOfProducts,
+                        Avx2.MultiplyAddAdjacent(thisVecShort, otherVecShort)
+                    );
                 }
                 else
                 {
                     // We know the multiply won't overflow because the values are all in the range -128 to 127
                     var products = Vector256Multiply(thisVecShort, otherVecShort);
-                    sumsOfProducts = Vector256Add(sumsOfProducts,
-                        Vector256Add(Vector256WidenLower(products), Vector256WidenUpper(products)));
+                    sumsOfProducts = Vector256Add(
+                        sumsOfProducts,
+                        Vector256Add(Vector256WidenLower(products), Vector256WidenUpper(products))
+                    );
                 }
 
                 // Multiply the upper halves
@@ -181,14 +200,19 @@ public readonly struct EmbeddingI8 : IEmbedding<EmbeddingI8>
                 otherVecShort = Vector256WidenUpper(otherVecSByte);
                 if (Avx2.IsSupported)
                 {
-                    sumsOfProducts = Vector256Add(sumsOfProducts, Avx2.MultiplyAddAdjacent(thisVecShort, otherVecShort));
+                    sumsOfProducts = Vector256Add(
+                        sumsOfProducts,
+                        Avx2.MultiplyAddAdjacent(thisVecShort, otherVecShort)
+                    );
                 }
                 else
                 {
                     // We know the multiply won't overflow because the values are all in the range -128 to 127
                     var products = Vector256Multiply(thisVecShort, otherVecShort);
-                    sumsOfProducts = Vector256Add(sumsOfProducts,
-                        Vector256Add(Vector256WidenLower(products), Vector256WidenUpper(products)));
+                    sumsOfProducts = Vector256Add(
+                        sumsOfProducts,
+                        Vector256Add(Vector256WidenLower(products), Vector256WidenUpper(products))
+                    );
                 }
             }
 
@@ -198,15 +222,20 @@ public readonly struct EmbeddingI8 : IEmbedding<EmbeddingI8>
     }
 
     /// <inheritdoc />
-    public static int GetBufferByteLength(int dimensions)
-        => 4 + dimensions; // Magnitude, then the bytes
+    public static int GetBufferByteLength(int dimensions) => 4 + dimensions; // Magnitude, then the bytes
 
     sealed class ByteEmbeddingJsonConverter : JsonConverter<EmbeddingI8>
     {
-        public override EmbeddingI8 Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
-            => new EmbeddingI8(reader.GetBytesFromBase64());
+        public override EmbeddingI8 Read(
+            ref Utf8JsonReader reader,
+            Type typeToConvert,
+            JsonSerializerOptions options
+        ) => new EmbeddingI8(reader.GetBytesFromBase64());
 
-        public override void Write(Utf8JsonWriter writer, EmbeddingI8 value, JsonSerializerOptions options)
-            => writer.WriteBase64StringValue(value.Buffer.Span);
+        public override void Write(
+            Utf8JsonWriter writer,
+            EmbeddingI8 value,
+            JsonSerializerOptions options
+        ) => writer.WriteBase64StringValue(value.Buffer.Span);
     }
 }

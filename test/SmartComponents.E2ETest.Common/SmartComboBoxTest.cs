@@ -6,11 +6,11 @@ using Microsoft.Playwright;
 
 namespace SmartComponents.E2ETest.Common;
 
-public class SmartComboBoxTest<TStartup> : PlaywrightTestBase<TStartup> where TStartup : class
+public class SmartComboBoxTest<TStartup> : PlaywrightTestBase<TStartup>
+    where TStartup : class
 {
-    public SmartComboBoxTest(KestrelWebApplicationFactory<TStartup> server) : base(server)
-    {
-    }
+    public SmartComboBoxTest(KestrelWebApplicationFactory<TStartup> server)
+        : base(server) { }
 
     protected override async Task OnBrowserReadyAsync()
     {
@@ -55,7 +55,10 @@ public class SmartComboBoxTest<TStartup> : PlaywrightTestBase<TStartup> where TS
         var suggestionItems = suggestions.Locator(".smartcombobox-suggestion[role=option]");
         Assert.Equal(10, await suggestionItems.CountAsync());
         var suggestionTexts = await suggestionItems.AllTextContentsAsync();
-        Assert.Equal(["Transportation: Air", "Transportation: Rail", "Transportation: Road"], suggestionTexts.Take(3).OrderBy(x => x));
+        Assert.Equal(
+            ["Transportation: Air", "Transportation: Rail", "Transportation: Road"],
+            suggestionTexts.Take(3).OrderBy(x => x)
+        );
         await Expect(suggestionItems.First).ToHaveTextAsync("Transportation: Road");
 
         // Suggestion list is hidden if you focus out of the input
@@ -84,7 +87,10 @@ public class SmartComboBoxTest<TStartup> : PlaywrightTestBase<TStartup> where TS
         await Expect(suggestions).ToHaveCSSAsync("display", "block");
 
         // With the default similarity threshold, we get 10 items. With the threshold 0.7, there are only 3.
-        Assert.Equal(3, await suggestions.Locator(".smartcombobox-suggestion[role=option]").CountAsync());
+        Assert.Equal(
+            3,
+            await suggestions.Locator(".smartcombobox-suggestion[role=option]").CountAsync()
+        );
     }
 
     [Fact]
@@ -96,7 +102,10 @@ public class SmartComboBoxTest<TStartup> : PlaywrightTestBase<TStartup> where TS
         await Expect(suggestions).ToHaveCSSAsync("display", "block");
 
         // This test case is configured with MaxSuggestions=2
-        Assert.Equal(2, await suggestions.Locator(".smartcombobox-suggestion[role=option]").CountAsync());
+        Assert.Equal(
+            2,
+            await suggestions.Locator(".smartcombobox-suggestion[role=option]").CountAsync()
+        );
     }
 
     [Fact]
@@ -136,7 +145,9 @@ public class SmartComboBoxTest<TStartup> : PlaywrightTestBase<TStartup> where TS
         Assert.NotEqual(0, await suggestions.EvaluateAsync<int>("s => s.scrollTop"));
 
         // Pressing enter again now accepts the suggestion and blurs the input
-        var highlightedSuggestionText = await suggestions.Locator("[aria-selected=true]").TextContentAsync();
+        var highlightedSuggestionText = await suggestions
+            .Locator("[aria-selected=true]")
+            .TextContentAsync();
         Assert.NotNull(highlightedSuggestionText);
         Assert.NotEmpty(highlightedSuggestionText);
         await Expect(input).ToHaveValueAsync(highlightedSuggestionText);
@@ -174,31 +185,44 @@ public class SmartComboBoxTest<TStartup> : PlaywrightTestBase<TStartup> where TS
     public async Task InferenceEndpointValidatesAntiforgery()
     {
         var url = Server.Address + "/api/accounting-categories";
-        var response = await new HttpClient().SendAsync(new(HttpMethod.Post, url)
-        {
-            Content = new FormUrlEncodedContent([
-                new("inputValue", ""),
-                new("maxResults", "0"),
-                new("similarityThreshold", "0"),
-            ])
-        });
+        var response = await new HttpClient().SendAsync(
+            new(HttpMethod.Post, url)
+            {
+                Content = new FormUrlEncodedContent([
+                    new("inputValue", ""),
+                    new("maxResults", "0"),
+                    new("similarityThreshold", "0"),
+                ]),
+            }
+        );
 
         // Strange that it's not a 400. Maybe it's for historical reasons.
         Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
-        Assert.Contains("AntiforgeryValidationException", await response.Content.ReadAsStringAsync());
+        Assert.Contains(
+            "AntiforgeryValidationException",
+            await response.Content.ReadAsStringAsync()
+        );
     }
 #endif
 
-    private static async Task AssertNthSuggestionIsActive(ILocator input, ILocator suggestions, int expectedSuggestionIndex)
+    private static async Task AssertNthSuggestionIsActive(
+        ILocator input,
+        ILocator suggestions,
+        int expectedSuggestionIndex
+    )
     {
         var suggestionItems = suggestions.Locator(".smartcombobox-suggestion");
-        var expectedSuggestionId = await suggestionItems.Nth(expectedSuggestionIndex).GetAttributeAsync("id");
+        var expectedSuggestionId = await suggestionItems
+            .Nth(expectedSuggestionIndex)
+            .GetAttributeAsync("id");
         Assert.NotNull(expectedSuggestionId);
         Assert.NotEmpty(expectedSuggestionId);
         await Expect(input).ToHaveAttributeAsync("aria-activedescendant", expectedSuggestionId);
 
         // Also check that only this suggestion is marked as aria-selected
-        await Expect(suggestionItems.Nth(expectedSuggestionIndex)).ToHaveAttributeAsync("aria-selected", "true");
-        await Expect(suggestions.Locator(".smartcombobox-suggestion[aria-selected=true]")).ToHaveCountAsync(1);
+        await Expect(suggestionItems.Nth(expectedSuggestionIndex))
+            .ToHaveAttributeAsync("aria-selected", "true");
+        await Expect(suggestions.Locator(".smartcombobox-suggestion[aria-selected=true]"))
+            .ToHaveCountAsync(1);
     }
 }

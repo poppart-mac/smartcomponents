@@ -9,9 +9,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Configuration.AddRepoSharedConfig();
 
 // Add services to the container.
-builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
-builder.Services.AddSmartComponents()
+builder.Services.AddRazorComponents().AddInteractiveServerComponents();
+builder
+    .Services.AddSmartComponents()
     .WithInferenceBackend<OpenAIInferenceBackend>()
     .WithAntiforgeryValidation();
 
@@ -32,19 +32,57 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
 
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 
 var embedder = app.Services.GetRequiredService<LocalEmbedder>();
-var expenseCategories = embedder.EmbedRange(
-    ["Groceries", "Utilities", "Rent", "Mortgage", "Car Payment", "Car Insurance", "Health Insurance", "Life Insurance", "Home Insurance", "Gas", "Public Transportation", "Dining Out", "Entertainment", "Travel", "Clothing", "Electronics", "Home Improvement", "Gifts", "Charity", "Education", "Childcare", "Pet Care", "Other"]);
-var issueLabels = embedder.EmbedRange(
-    ["Bug", "Docs", "Enhancement", "Question", "UI (Android)", "UI (iOS)", "UI (Windows)", "UI (Mac)", "Performance", "Security", "Authentication", "Accessibility"]);
+var expenseCategories = embedder.EmbedRange([
+    "Groceries",
+    "Utilities",
+    "Rent",
+    "Mortgage",
+    "Car Payment",
+    "Car Insurance",
+    "Health Insurance",
+    "Life Insurance",
+    "Home Insurance",
+    "Gas",
+    "Public Transportation",
+    "Dining Out",
+    "Entertainment",
+    "Travel",
+    "Clothing",
+    "Electronics",
+    "Home Improvement",
+    "Gifts",
+    "Charity",
+    "Education",
+    "Childcare",
+    "Pet Care",
+    "Other",
+]);
+var issueLabels = embedder.EmbedRange([
+    "Bug",
+    "Docs",
+    "Enhancement",
+    "Question",
+    "UI (Android)",
+    "UI (iOS)",
+    "UI (Windows)",
+    "UI (Mac)",
+    "Performance",
+    "Security",
+    "Authentication",
+    "Accessibility",
+]);
 
-app.MapSmartComboBox("/api/suggestions/expense-category",
-    request => embedder.FindClosest(request.Query, expenseCategories));
+app.MapSmartComboBox(
+    "/api/suggestions/expense-category",
+    request => embedder.FindClosest(request.Query, expenseCategories)
+);
 
-app.MapSmartComboBox("/api/suggestions/issue-label",
-    request => embedder.FindClosest(request.Query, issueLabels));
+app.MapSmartComboBox(
+    "/api/suggestions/issue-label",
+    request => embedder.FindClosest(request.Query, issueLabels)
+);
 
 app.Run();

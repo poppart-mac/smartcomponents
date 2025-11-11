@@ -10,16 +10,7 @@ public
 #endif
 struct SmartTextAreaConfig
 {
-    public string? Parameters
-    {
-        get; set;
-    }
-    public string? UserRole
-    {
-        get; set;
-    }
-    public string[]? UserPhrases
-    {
-        get; set;
-    }
+    public string? Parameters { get; set; }
+    public string? UserRole { get; set; }
+    public string[]? UserPhrases { get; set; }
 }

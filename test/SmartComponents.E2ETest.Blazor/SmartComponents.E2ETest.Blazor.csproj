@@ -1,21 +1,19 @@
 <Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
 
-    <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <IsTestProject>true</IsTestProject>
-    </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SmartComponents.E2ETest.Common\SmartComponents.E2ETest.Common.csproj" />
+    <ProjectReference Include="..\testassets\TestBlazorApp\TestBlazorApp.csproj" />
 
-    <ItemGroup>
-        <ProjectReference Include="..\SmartComponents.E2ETest.Common\SmartComponents.E2ETest.Common.csproj" />
-        <ProjectReference Include="..\testassets\TestBlazorApp\TestBlazorApp.csproj" />
-
-		<PackageReference Include="Microsoft.NET.Test.Sdk" />
-		<PackageReference Include="xunit.runner.visualstudio">
-			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-			<PrivateAssets>all</PrivateAssets>
-		</PackageReference>
-	</ItemGroup>
-
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit.runner.visualstudio">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
 </Project>

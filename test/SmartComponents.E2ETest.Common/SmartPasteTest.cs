@@ -7,11 +7,11 @@ using System.Net;
 
 namespace SmartComponents.E2ETest.Common;
 
-public class SmartPasteTest<TStartup> : PlaywrightTestBase<TStartup> where TStartup : class
+public class SmartPasteTest<TStartup> : PlaywrightTestBase<TStartup>
+    where TStartup : class
 {
-    public SmartPasteTest(KestrelWebApplicationFactory<TStartup> server) : base(server)
-    {
-    }
+    public SmartPasteTest(KestrelWebApplicationFactory<TStartup> server)
+        : base(server) { }
 
     protected override async Task OnBrowserReadyAsync()
     {
@@ -52,20 +52,20 @@ public class SmartPasteTest<TStartup> : PlaywrightTestBase<TStartup> where TStar
     {
         var button = Page.Locator("#default-params");
         await Expect(button).ToHaveAttributeAsync("class", "smart-paste-button");
-        await Expect(button).ToHaveAttributeAsync("title", "Use content on the clipboard to fill out the form");
+        await Expect(button)
+            .ToHaveAttributeAsync("title", "Use content on the clipboard to fill out the form");
         await Expect(button).ToHaveTextAsync("Smart Paste");
         await Expect(button.Locator("svg")).ToHaveCountAsync(0); // No icon by default
     }
 
     [Fact]
-    public Task CanOverrideCssClass()
-        => Expect(Page.Locator("#custom-css-class"))
-        .ToHaveAttributeAsync("class", "my-custom-class"); // Note the absence of smart-paste-button
+    public Task CanOverrideCssClass() =>
+        Expect(Page.Locator("#custom-css-class")).ToHaveAttributeAsync("class", "my-custom-class"); // Note the absence of smart-paste-button
 
     [Fact]
-    public Task CanOverrideTooltip()
-        => Expect(Page.Locator("#custom-tooltip"))
-        .ToHaveAttributeAsync("title", "This is the tooltip");
+    public Task CanOverrideTooltip() =>
+        Expect(Page.Locator("#custom-tooltip"))
+            .ToHaveAttributeAsync("title", "This is the tooltip");
 
     [Fact]
     public async Task CanHaveDefaultIcon()
@@ -97,8 +97,10 @@ public class SmartPasteTest<TStartup> : PlaywrightTestBase<TStartup> where TStar
     public async Task CanHaveDefaultIconAndChildContent()
     {
         var button = Page.Locator("#with-icon-and-child-content");
-        await Expect(button.Locator("svg.smart-paste-icon.smart-paste-icon-normal")).ToHaveCountAsync(1);
-        await Expect(button.Locator("svg.smart-paste-icon.smart-paste-icon-running")).ToHaveCountAsync(1);
+        await Expect(button.Locator("svg.smart-paste-icon.smart-paste-icon-normal"))
+            .ToHaveCountAsync(1);
+        await Expect(button.Locator("svg.smart-paste-icon.smart-paste-icon-running"))
+            .ToHaveCountAsync(1);
         await Expect(button).ToHaveTextAsync("This is my custom content");
         await Expect(button.Locator("strong")).ToHaveTextAsync("custom");
     }
@@ -108,10 +110,13 @@ public class SmartPasteTest<TStartup> : PlaywrightTestBase<TStartup> where TStar
     {
         var form = Page.Locator("#element-types");
 
-        await SetClipboardContentsAsync("AI: Artificial Intelligence (2001, director: Steven Spielberg) is a sci-fi movie about a robot boy who desperately wants to be human. The tragedy at the heart of the film, though, is star Haley Joel Osment’s immortality. He was designed as a child, but outlives everyone he ever loves. Available now through streaming services.");
+        await SetClipboardContentsAsync(
+            "AI: Artificial Intelligence (2001, director: Steven Spielberg) is a sci-fi movie about a robot boy who desperately wants to be human. The tragedy at the heart of the film, though, is star Haley Joel Osment’s immortality. He was designed as a child, but outlives everyone he ever loves. Available now through streaming services."
+        );
         await form.Locator(".smart-paste-button").ClickAsync();
 
-        await Expect(form.Locator("[name='movie.title']")).ToHaveValueAsync("AI: Artificial Intelligence");
+        await Expect(form.Locator("[name='movie.title']"))
+            .ToHaveValueAsync("AI: Artificial Intelligence");
         await Expect(form.Locator("[name='movie.release_year']")).ToHaveValueAsync("2001");
         await Expect(form.Locator("[name='movie_genre']")).ToHaveValueAsync("sci");
         await Expect(form.Locator("[name='movie.for_kids']")).Not.ToBeCheckedAsync();
@@ -126,18 +131,21 @@ public class SmartPasteTest<TStartup> : PlaywrightTestBase<TStartup> where TStar
     public async Task CanInferFieldDescriptions()
     {
         var form = Page.Locator("#inferring-descriptions");
-        await SetClipboardContentsAsync(@"
+        await SetClipboardContentsAsync(
+            @"
             Hairstyle: Tonsure
             Metal band: Sad Iron
             Philosophy: Nihilism
             City: Cairns
             Shoe size: 55
-        ");
+        "
+        );
         await form.Locator(".smart-paste-button").ClickAsync();
 
         await Expect(form.Locator("[name='explicitly-annotated']")).ToHaveValueAsync("Cairns");
         await Expect(form.Locator("#labelled-field")).ToHaveValueAsync("Sad Iron");
-        await Expect(form.Locator("[name='inferred-from-nearby-text']")).ToHaveValueAsync("Tonsure");
+        await Expect(form.Locator("[name='inferred-from-nearby-text']"))
+            .ToHaveValueAsync("Tonsure");
         await Expect(form.Locator("[name='shoe-size']")).ToHaveValueAsync("55");
         await Expect(form.Locator("#philosophy")).ToHaveValueAsync("Nihilism");
     }
@@ -147,17 +155,23 @@ public class SmartPasteTest<TStartup> : PlaywrightTestBase<TStartup> where TStar
     public async Task InferenceEndpointValidatesAntiforgery()
     {
         var url = Server.Address + "/_smartcomponents/smartpaste";
-        var response = await new HttpClient().SendAsync(new (HttpMethod.Post, url)
-        {
-            Content = new FormUrlEncodedContent([new("dataJson", "{}")])
-        });
+        var response = await new HttpClient().SendAsync(
+            new(HttpMethod.Post, url)
+            {
+                Content = new FormUrlEncodedContent([new("dataJson", "{}")]),
+            }
+        );
 
         // Strange that it's not a 400. Maybe it's for historical reasons.
         Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
-        Assert.Contains("AntiforgeryValidationException", await response.Content.ReadAsStringAsync());
+        Assert.Contains(
+            "AntiforgeryValidationException",
+            await response.Content.ReadAsStringAsync()
+        );
     }
 #endif
 
-    protected Task SetClipboardContentsAsync(string text)
-        => Page.Locator("html").EvaluateAsync("(ignored, value) => navigator.clipboard.writeText(value)", text);
+    protected Task SetClipboardContentsAsync(string text) =>
+        Page.Locator("html")
+            .EvaluateAsync("(ignored, value) => navigator.clipboard.writeText(value)", text);
 }

@@ -8,10 +8,15 @@ namespace SmartComponents.Inference;
 
 public class SmartTextAreaInference
 {
-    public virtual ChatParameters BuildPrompt(SmartTextAreaConfig config, string textBefore, string textAfter)
+    public virtual ChatParameters BuildPrompt(
+        SmartTextAreaConfig config,
+        string textBefore,
+        string textAfter
+    )
     {
         var systemMessageBuilder = new StringBuilder();
-        systemMessageBuilder.Append(@"Predict what text the user in the given ROLE would insert at the cursor position indicated by ^^^.
+        systemMessageBuilder.Append(
+            @"Predict what text the user in the given ROLE would insert at the cursor position indicated by ^^^.
 Only give predictions for which you have an EXTREMELY high confidence that the user would insert that EXACT text.
 Do not make up new information. If you're not sure, just reply with NO_PREDICTION.
 
@@ -19,11 +24,14 @@ RULES:
 1. Reply with OK:, then in square brackets the predicted text, then END_INSERTION, and no other output.
 2. When a specific value or quantity cannot be inferred and would need to be provided, use the word NEED_INFO.
 3. If there isn't enough information to predict any words that the user would type next, just reply with the word NO_PREDICTION.
-4. NEVER invent new information. If you can't be sure what the user is about to type, ALWAYS stop the prediction with END_INSERTION.");
+4. NEVER invent new information. If you can't be sure what the user is about to type, ALWAYS stop the prediction with END_INSERTION."
+        );
 
         if (config.UserPhrases is { Length: > 0 } stockPhrases)
         {
-            systemMessageBuilder.Append("\nAlways try to use variations on the following phrases as part of the predictions:\n");
+            systemMessageBuilder.Append(
+                "\nAlways try to use variations on the following phrases as part of the predictions:\n"
+            );
             foreach (var phrase in stockPhrases)
             {
                 systemMessageBuilder.AppendFormat(CultureInfo.InvariantCulture, "- {0}\n", phrase);
@@ -33,37 +41,51 @@ RULES:
         List<ChatMessage> messages =
         [
             new(ChatMessageRole.System, systemMessageBuilder.ToString()),
-
-            new(ChatMessageRole.User, @"ROLE: Family member sending a text
-USER_TEXT: Hey, it's a nice day - the weather is ^^^"),
+            new(
+                ChatMessageRole.User,
+                @"ROLE: Family member sending a text
+USER_TEXT: Hey, it's a nice day - the weather is ^^^"
+            ),
             new(ChatMessageRole.Assistant, @"OK:[great!]END_INSERTION"),
-
-            new(ChatMessageRole.User, @"ROLE: Customer service assistant
+            new(
+                ChatMessageRole.User,
+                @"ROLE: Customer service assistant
 USER_TEXT: You can find more information on^^^
 
-Alternatively, phone us."),
+Alternatively, phone us."
+            ),
             new(ChatMessageRole.Assistant, @"OK:[ our website at NEED_INFO]END_INSERTION"),
-
-            new(ChatMessageRole.User, @"ROLE: Casual
+            new(
+                ChatMessageRole.User,
+                @"ROLE: Casual
 USER_TEXT: Oh I see!
 
-Well sure thing, we can"),
+Well sure thing, we can"
+            ),
             new(ChatMessageRole.Assistant, @"OK:[ help you out with that!]END_INSERTION"),
-
-            new(ChatMessageRole.User, @"ROLE: Storyteller
-USER_TEXT: Sir Digby Chicken Caesar, also know^^^"),
+            new(
+                ChatMessageRole.User,
+                @"ROLE: Storyteller
+USER_TEXT: Sir Digby Chicken Caesar, also know^^^"
+            ),
             new(ChatMessageRole.Assistant, @"OK:[n as NEED_INFO]END_INSERTION"),
-
-            new(ChatMessageRole.User, @"ROLE: Customer support agent
-USER_TEXT: Goodbye for now.^^^"),
+            new(
+                ChatMessageRole.User,
+                @"ROLE: Customer support agent
+USER_TEXT: Goodbye for now.^^^"
+            ),
             new(ChatMessageRole.Assistant, @"NO_PREDICTION END_INSERTION"),
-
-            new(ChatMessageRole.User, @"ROLE: Pirate
-USER_TEXT: Have you found^^^"),
+            new(
+                ChatMessageRole.User,
+                @"ROLE: Pirate
+USER_TEXT: Have you found^^^"
+            ),
             new(ChatMessageRole.Assistant, @"OK:[ the treasure, me hearties?]END_INSERTION"),
-
-            new(ChatMessageRole.User, @$"ROLE: {config.UserRole}
-USER_TEXT: {textBefore}^^^{textAfter}"),
+            new(
+                ChatMessageRole.User,
+                @$"ROLE: {config.UserRole}
+USER_TEXT: {textBefore}^^^{textAfter}"
+            ),
         ];
 
         return new ChatParameters
@@ -77,7 +99,12 @@ USER_TEXT: {textBefore}^^^{textAfter}"),
         };
     }
 
-    public virtual async Task<string> GetInsertionSuggestionAsync(IInferenceBackend inference, SmartTextAreaConfig config, string textBefore, string textAfter)
+    public virtual async Task<string> GetInsertionSuggestionAsync(
+        IInferenceBackend inference,
+        SmartTextAreaConfig config,
+        string textBefore,
+        string textAfter
+    )
     {
         var chatOptions = BuildPrompt(config, textBefore, textAfter);
         var response = await inference.GetChatResponseAsync(chatOptions);

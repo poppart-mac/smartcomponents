@@ -21,7 +21,7 @@ internal sealed class ConditionalAntiforgery
         // code will try to obtain the token from an enclosing <form>.
 #if NET8_0_OR_GREATER
         var antiforgeryState = services.GetService<AntiforgeryStateProvider>();
-        if (antiforgeryState?.GetAntiforgeryToken() is {} requestToken)
+        if (antiforgeryState?.GetAntiforgeryToken() is { } requestToken)
         {
             FormFieldName = requestToken.FormFieldName;
             Value = requestToken.Value;

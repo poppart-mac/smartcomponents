@@ -14,9 +14,10 @@ LogAllResultsToConsole();
 static void LogAllResultsToConsole()
 {
     // Emit the markdown output in a way that's easier to read in CI log output
-    var markdownFiles = Directory.GetFiles(
-        Path.Combine("BenchmarkDotNet.Artifacts", "results"),
-        "*.md").OrderBy(x => x, StringComparer.Ordinal).ToArray();
+    var markdownFiles = Directory
+        .GetFiles(Path.Combine("BenchmarkDotNet.Artifacts", "results"), "*.md")
+        .OrderBy(x => x, StringComparer.Ordinal)
+        .ToArray();
     foreach (var filename in markdownFiles)
     {
         Console.WriteLine();
@@ -36,10 +37,11 @@ public class FastRunConfig : ManualConfig
     public FastRunConfig()
     {
         Add(DefaultConfig.Instance);
-        AddJob(Job.Default
-            .WithLaunchCount(1)
-            .WithToolchain(InProcessEmitToolchain.Instance)
-            .WithWarmupCount(3)
-            .WithIterationCount(5));
+        AddJob(
+            Job.Default.WithLaunchCount(1)
+                .WithToolchain(InProcessEmitToolchain.Instance)
+                .WithWarmupCount(3)
+                .WithIterationCount(5)
+        );
     }
 }

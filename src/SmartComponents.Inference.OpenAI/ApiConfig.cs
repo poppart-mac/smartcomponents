@@ -21,8 +21,11 @@ internal class ApiConfig
 
         if (SelfHosted)
         {
-            Endpoint = configSection.GetValue<Uri>("Endpoint")
-                ?? throw new InvalidOperationException("Missing required configuration value: SmartComponents:Endpoint. This is required for SelfHosted inference.");
+            Endpoint =
+                configSection.GetValue<Uri>("Endpoint")
+                ?? throw new InvalidOperationException(
+                    "Missing required configuration value: SmartComponents:Endpoint. This is required for SelfHosted inference."
+                );
 
             // Ollama uses this, but other self-hosted backends might not, so it's optional.
             DeploymentName = configSection.GetValue<string>("DeploymentName");
@@ -36,11 +39,17 @@ internal class ApiConfig
             Endpoint = configSection.GetValue<Uri>("Endpoint");
 
             // For Azure OpenAI, it's your deployment name. For OpenAI, it's the model name.
-            DeploymentName = configSection.GetValue<string>("DeploymentName")
-                ?? throw new InvalidOperationException("Missing required configuration value: SmartComponents:DeploymentName");
+            DeploymentName =
+                configSection.GetValue<string>("DeploymentName")
+                ?? throw new InvalidOperationException(
+                    "Missing required configuration value: SmartComponents:DeploymentName"
+                );
 
-            ApiKey = configSection.GetValue<string>("ApiKey")
-                ?? throw new InvalidOperationException("Missing required configuration value: SmartComponents:ApiKey");
+            ApiKey =
+                configSection.GetValue<string>("ApiKey")
+                ?? throw new InvalidOperationException(
+                    "Missing required configuration value: SmartComponents:ApiKey"
+                );
         }
     }
 }

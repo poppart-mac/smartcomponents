@@ -20,8 +20,10 @@ public class SmartPasteInferenceForTests : SmartPasteInference
         // otherwise the captured requests won't match
         var messages = chatParameters.Messages!;
         var firstMessage = messages.First();
-        var newFirstMessageText = new Regex("^Current date\\: .*$", RegexOptions.Multiline)
-            .Replace(firstMessage.Text, $"Current date: {overrideDateForTests.ToString("D", CultureInfo.InvariantCulture)}");
+        var newFirstMessageText = new Regex("^Current date\\: .*$", RegexOptions.Multiline).Replace(
+            firstMessage.Text,
+            $"Current date: {overrideDateForTests.ToString("D", CultureInfo.InvariantCulture)}"
+        );
         if (newFirstMessageText == firstMessage.Text)
         {
             throw new InvalidOperationException($"Could not find \"Current date:\" line in prompt");

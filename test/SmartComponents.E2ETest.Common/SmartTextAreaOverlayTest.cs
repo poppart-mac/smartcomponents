@@ -7,22 +7,24 @@ using static SmartComponents.E2ETest.Common.Infrastructure.TextAreaAssertions;
 
 namespace SmartComponents.E2ETest.Common;
 
-public class SmartTextAreaOverlayTest<TStartup> : PlaywrightTestBase<TStartup> where TStartup : class
+public class SmartTextAreaOverlayTest<TStartup> : PlaywrightTestBase<TStartup>
+    where TStartup : class
 {
     protected ILocator textArea = default!;
     protected ILocator suggestionElement = default!;
     protected ILocator suggestionPrefixElement = default!;
     protected ILocator suggestionTextElement = default!;
 
-    public SmartTextAreaOverlayTest(KestrelWebApplicationFactory<TStartup> server) : base(server)
-    {
-    }
+    public SmartTextAreaOverlayTest(KestrelWebApplicationFactory<TStartup> server)
+        : base(server) { }
 
     protected override async Task OnBrowserReadyAsync()
     {
         await Page.GotoAsync(Server.Address + "/smarttextarea");
         textArea = Page.Locator("textarea#with-overlay-display");
-        suggestionElement = Page.Locator("textarea#with-overlay-display + smart-textarea > .smart-textarea-suggestion-overlay");
+        suggestionElement = Page.Locator(
+            "textarea#with-overlay-display + smart-textarea > .smart-textarea-suggestion-overlay"
+        );
         suggestionPrefixElement = suggestionElement.Locator("span:nth-child(1)");
         suggestionTextElement = suggestionElement.Locator("span:nth-child(2)");
     }
@@ -38,7 +40,12 @@ public class SmartTextAreaOverlayTest<TStartup> : PlaywrightTestBase<TStartup> w
     [Fact]
     public async Task ShowsSuggestionAfterTypingAtTheEndOfALine()
     {
-        await textArea.ClickAsync(new() { Position = new() { X = 200, Y = 5 } });
+        await textArea.ClickAsync(
+            new()
+            {
+                Position = new() { X = 200, Y = 5 },
+            }
+        );
         await AssertSelectionPositionAsync(textArea, 17, 0);
         await Expect(textArea).ToBeFocusedAsync();
 
@@ -55,14 +62,22 @@ public class SmartTextAreaOverlayTest<TStartup> : PlaywrightTestBase<TStartup> w
         // Suggestion remains visible if you type things that match the suggestion
         // Importantly, the timeout on these assertions is zero, since the suggestion should never have gone away
         await textArea.PressSequentiallyAsync("itive");
-        Assert.Equal("It's 35 degrees C - that's positive\n\nNext, sport.", await textArea.InputValueAsync());
+        Assert.Equal(
+            "It's 35 degrees C - that's positive\n\nNext, sport.",
+            await textArea.InputValueAsync()
+        );
         await AssertIsShowingSuggestionAsync(35, "positive", "ly sweltering! ", timeout: 0);
     }
 
     [Fact]
     public async Task DoesNotShowSuggestionAfterTypingInTheMiddleOfALine()
     {
-        await textArea.ClickAsync(new() { Position = new() { X = 200, Y = 5 } });
+        await textArea.ClickAsync(
+            new()
+            {
+                Position = new() { X = 200, Y = 5 },
+            }
+        );
         for (var i = 0; i < 10; i++)
         {
             await textArea.PressAsync("ArrowLeft");
@@ -82,7 +97,12 @@ public class SmartTextAreaOverlayTest<TStartup> : PlaywrightTestBase<TStartup> w
     public async Task CanRejectSuggestionByTyping()
     {
         // Show a suggestion
-        await textArea.ClickAsync(new() { Position = new() { X = 200, Y = 5 } });
+        await textArea.ClickAsync(
+            new()
+            {
+                Position = new() { X = 200, Y = 5 },
+            }
+        );
         await textArea.PressSequentiallyAsync(" - that's pos");
         await AssertIsShowingSuggestionAsync(30, "pos", "itively sweltering! ");
 
@@ -99,7 +119,12 @@ public class SmartTextAreaOverlayTest<TStartup> : PlaywrightTestBase<TStartup> w
     public async Task CanRejectSuggestionByMovingCursor()
     {
         // Show a suggestion
-        await textArea.ClickAsync(new() { Position = new() { X = 200, Y = 5 } });
+        await textArea.ClickAsync(
+            new()
+            {
+                Position = new() { X = 200, Y = 5 },
+            }
+        );
         await textArea.PressSequentiallyAsync(" - that's pos");
         await AssertIsShowingSuggestionAsync(30, "pos", "itively sweltering! ");
 
@@ -113,12 +138,22 @@ public class SmartTextAreaOverlayTest<TStartup> : PlaywrightTestBase<TStartup> w
     public async Task CanRejectSuggestionByClicking()
     {
         // Show a suggestion
-        await textArea.ClickAsync(new() { Position = new() { X = 200, Y = 5 } });
+        await textArea.ClickAsync(
+            new()
+            {
+                Position = new() { X = 200, Y = 5 },
+            }
+        );
         await textArea.PressSequentiallyAsync(" - that's pos");
         await AssertIsShowingSuggestionAsync(30, "pos", "itively sweltering! ");
 
         // It goes away if you click to move the cursor
-        await textArea.ClickAsync(new() { Position = new() { X = 20, Y = 5 } });
+        await textArea.ClickAsync(
+            new()
+            {
+                Position = new() { X = 20, Y = 5 },
+            }
+        );
         await AssertIsNotShowingSuggestionAsync();
         await Expect(textArea).ToHaveValueAsync("It's 35 degrees C - that's pos\n\nNext, sport.");
     }
@@ -127,7 +162,12 @@ public class SmartTextAreaOverlayTest<TStartup> : PlaywrightTestBase<TStartup> w
     public async Task CanRejectSuggestionByScrolling()
     {
         // Show a suggestion
-        await textArea.ClickAsync(new() { Position = new() { X = 200, Y = 5 } });
+        await textArea.ClickAsync(
+            new()
+            {
+                Position = new() { X = 200, Y = 5 },
+            }
+        );
         await textArea.PressSequentiallyAsync(" - that's pos");
         await AssertIsShowingSuggestionAsync(30, "pos", "itively sweltering! ");
 
@@ -141,7 +181,12 @@ public class SmartTextAreaOverlayTest<TStartup> : PlaywrightTestBase<TStartup> w
     public async Task CanRejectSuggestionByFocusingOut()
     {
         // Show a suggestion
-        await textArea.ClickAsync(new() { Position = new() { X = 200, Y = 5 } });
+        await textArea.ClickAsync(
+            new()
+            {
+                Position = new() { X = 200, Y = 5 },
+            }
+        );
         await textArea.PressSequentiallyAsync(" - that's pos");
         await AssertIsShowingSuggestionAsync(30, "pos", "itively sweltering! ");
 
@@ -155,7 +200,12 @@ public class SmartTextAreaOverlayTest<TStartup> : PlaywrightTestBase<TStartup> w
     public async Task CanAcceptSuggestionByPressingTab()
     {
         // Show a suggestion
-        await textArea.ClickAsync(new() { Position = new() { X = 200, Y = 5 } });
+        await textArea.ClickAsync(
+            new()
+            {
+                Position = new() { X = 200, Y = 5 },
+            }
+        );
         await textArea.PressSequentiallyAsync(" - that's pos");
         await AssertIsShowingSuggestionAsync(30, "pos", "itively sweltering! ");
 
@@ -166,7 +216,8 @@ public class SmartTextAreaOverlayTest<TStartup> : PlaywrightTestBase<TStartup> w
         // but that would lead to flaky tests since another suggestion will appear
         // after another 200-300ms. So the best we can do is assert about the state
         // after the next suggestion appears.
-        await Expect(textArea).ToHaveValueAsync("It's 35 degrees C - that's positively sweltering! \n\nNext, sport.");
+        await Expect(textArea)
+            .ToHaveValueAsync("It's 35 degrees C - that's positively sweltering! \n\nNext, sport.");
         await AssertIsShowingSuggestionAsync(50, "", "I hope you're staying cool out there! ");
     }
 
@@ -174,14 +225,20 @@ public class SmartTextAreaOverlayTest<TStartup> : PlaywrightTestBase<TStartup> w
     public async Task CanAcceptSuggestionByClickingIt()
     {
         // Show a suggestion
-        await textArea.ClickAsync(new() { Position = new() { X = 200, Y = 5 } });
+        await textArea.ClickAsync(
+            new()
+            {
+                Position = new() { X = 200, Y = 5 },
+            }
+        );
         await textArea.PressSequentiallyAsync(" - that's pos");
         await AssertIsShowingSuggestionAsync(30, "pos", "itively sweltering! ");
 
         // Accept it
         await suggestionElement.ClickAsync();
         await AssertIsNotShowingSuggestionAsync();
-        await Expect(textArea).ToHaveValueAsync("It's 35 degrees C - that's positively sweltering! \n\nNext, sport.");
+        await Expect(textArea)
+            .ToHaveValueAsync("It's 35 degrees C - that's positively sweltering! \n\nNext, sport.");
         await AssertSelectionPositionAsync(textArea, 50, 0);
 
         // Does not show another suggestion even if we wait a bit first
@@ -191,21 +248,32 @@ public class SmartTextAreaOverlayTest<TStartup> : PlaywrightTestBase<TStartup> w
         await AssertIsNotShowingSuggestionAsync();
     }
 
-    protected async Task AssertIsShowingSuggestionAsync(int position, string suggestionPrefix, string suggestionText, float? timeout = null)
+    protected async Task AssertIsShowingSuggestionAsync(
+        int position,
+        string suggestionPrefix,
+        string suggestionText,
+        float? timeout = null
+    )
     {
         if (timeout == 0)
         {
             Assert.True(await suggestionElement.IsVisibleAsync());
-            Assert.Contains("smart-textarea-suggestion-overlay-visible", await suggestionElement.EvaluateAsync<string>("e => e.className"));
+            Assert.Contains(
+                "smart-textarea-suggestion-overlay-visible",
+                await suggestionElement.EvaluateAsync<string>("e => e.className")
+            );
             Assert.Equal(suggestionPrefix, await suggestionPrefixElement.TextContentAsync());
             Assert.Equal(suggestionText, await suggestionTextElement.TextContentAsync());
         }
         else
         {
             await Expect(suggestionElement).ToBeVisibleAsync();
-            await Expect(suggestionElement).ToHaveClassAsync(new Regex("\\bsmart-textarea-suggestion-overlay-visible\\b"));
-            await Expect(suggestionPrefixElement).ToHaveTextAsync(suggestionPrefix, new() { Timeout = timeout });
-            await Expect(suggestionTextElement).ToHaveTextAsync(suggestionText, new() { Timeout = timeout });
+            await Expect(suggestionElement)
+                .ToHaveClassAsync(new Regex("\\bsmart-textarea-suggestion-overlay-visible\\b"));
+            await Expect(suggestionPrefixElement)
+                .ToHaveTextAsync(suggestionPrefix, new() { Timeout = timeout });
+            await Expect(suggestionTextElement)
+                .ToHaveTextAsync(suggestionText, new() { Timeout = timeout });
         }
 
         await AssertSelectionPositionAsync(textArea, position, 0);
@@ -214,6 +282,7 @@ public class SmartTextAreaOverlayTest<TStartup> : PlaywrightTestBase<TStartup> w
     protected async Task AssertIsNotShowingSuggestionAsync()
     {
         await Expect(suggestionElement).Not.ToBeVisibleAsync();
-        await Expect(suggestionElement).Not.ToHaveClassAsync(new Regex("\\bsmart-textarea-suggestion-overlay-visible\\b"));
+        await Expect(suggestionElement)
+            .Not.ToHaveClassAsync(new Regex("\\bsmart-textarea-suggestion-overlay-visible\\b"));
     }
 }
